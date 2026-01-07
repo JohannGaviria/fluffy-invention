@@ -31,15 +31,25 @@ Copy `.env.example` to `.env` and edit as needed, or set the variables directly 
 cp .env.example .env
 ```
 
-| Category              | Key             | Description                                                              | Example                                                           |
-| --------------------- | --------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------- |
-| Application Metadata  | APP_NAME        | Human-readable name of the application                                   | Fluffy Invention                                                  |
-| Application Metadata  | APP_SUMMARY     | Short summary describing the main purpose of the application             | System to manage medical appointments efficiently and centrally   |
-| Application Metadata  | APP_DESCRIPTION | Detailed description of the application and its business context         | Medical appointment management system for healthcare institutions |
-| Backend Configuration | DEBUG           | Enables or disables debug mode for development and troubleshooting       | True                                                              |
-| Backend Configuration | ENVIRONMENT     | Defines the runtime environment where the application is running         | development                                                       |
-| Backend Configuration | BACKEND_PORT    | Network port where the backend service listens for incoming requests     | 8000                                                              |
-| Backend Configuration | BACKEND_WORKERS | Number of worker processes used by the backend server to handle requests | 4                                                                 |
+| Category               | Key               | Description                                                              | Example                                                                              |
+| -----------------------| ------------------| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------|
+| Application Metadata   | APP_NAME          | Human-readable name of the application                                   | Fluffy Invention                                                                     |
+| Application Metadata   | APP_SUMMARY       | Short summary describing the main purpose of the application             | System to manage medical appointments efficiently and centrally                      |
+| Application Metadata   | APP_DESCRIPTION   | Detailed description of the application and its business context         | Medical appointment management system for healthcare institutions                    |
+| Backend Configuration  | DEBUG             | Enables or disables debug mode for development and troubleshooting       | True                                                                                 |
+| Backend Configuration  | ENVIRONMENT       | Defines the runtime environment where the application is running         | development                                                                          |
+| Backend Configuration  | BACKEND_PORT      | Network port where the backend service listens for incoming requests     | 8000                                                                                 |
+| Backend Configuration  | BACKEND_WORKERS   | Number of worker processes used by the backend server to handle requests | 4                                                                                    |
+| Backend Configuration  | LOG_LEVEL         | Logging verbosity level used by the application                          | INFO                                                                                 |
+| Database Configuration | DATABASE_URL      | Full database connection string                                          | postgresql+psycopg2://postgres:password@fluffy-invention-db:5432/fluffy_invention_db |
+| Database Configuration | DB_PORT           | Port where the database service is exposed                               | 5432                                                                                 |
+| Database Configuration | POSTGRES_USER     | Username used to authenticate with the PostgreSQL database               | fluffy_user                                                                          |
+| Database Configuration | POSTGRES_PASSWORD | Password used to authenticate with the PostgreSQL database               | supersecret                                                                          |
+| Database Configuration | POSTGRES_DB       | Name of the PostgreSQL database                                          | fluffy_db                                                                            |
+| Redis Configuration    | REDIS_HOST        | Hostname or service name of the Redis instance                           | redis                                                                                |
+| Redis Configuration    | REDIS_PORT        | Port where the Redis service is exposed                                  | 6379                                                                                 |
+| Redis Configuration    | REDIS_PASSWORD    | Password for authenticating with Redis (if enabled)                      | redispass                                                                            |
+| Redis Configuration    | REDIS_DB          | Redis database index used by the application                             | 0                                                                                    |
 
 ---
 

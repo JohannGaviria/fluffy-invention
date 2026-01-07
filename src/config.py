@@ -13,12 +13,26 @@ class Settings(BaseSettings):
     APP_NAME: str = Field(..., validation_alias="APP_NAME")
     APP_SUMMARY: str = Field(..., validation_alias="APP_SUMMARY")
     APP_DESCRIPTION: str = Field(..., validation_alias="APP_DESCRIPTION")
-    
+
     # Backend configuration
     DEBUG: str = Field(..., validation_alias="DEBUG")
     ENVIRONMENT: str = Field(..., validation_alias="ENVIRONMENT")
     BACKEND_PORT: int = Field(..., validation_alias="BACKEND_PORT")
     BACKEND_WORKERS: int = Field(..., validation_alias="BACKEND_WORKERS")
+    LOG_LEVEL: str = Field(..., validation_alias="LOG_LEVEL")
+
+    # Database configuration
+    DATABASE_URL: str = Field(..., validation_alias="DATABASE_URL")
+    DB_PORT: int = Field(..., validation_alias="DB_PORT")
+    POSTGRES_USER: str = Field(..., validation_alias="POSTGRES_USER")
+    POSTGRES_DB: str = Field(..., validation_alias="POSTGRES_DB")
+    POSTGRES_PASSWORD: str = Field(..., validation_alias="POSTGRES_PASSWORD")
+
+    # Redis configuration
+    REDIS_PORT: int = Field(..., validation_alias="REDIS_PORT")
+    REDIS_PASSWORD: str = Field(..., validation_alias="REDIS_PASSWORD")
+    REDIS_HOST: str = Field(..., validation_alias="REDIS_HOST")
+    REDIS_DB: int = Field(..., validation_alias="REDIS_DB")
 
     model_config = SettingsConfigDict(env_file=".env")
 
