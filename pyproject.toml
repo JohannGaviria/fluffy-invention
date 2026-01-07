@@ -36,7 +36,7 @@ indent-style = "space"
 line-ending = "lf"
 
 [tool.ruff.lint.isort]
-known-first-party = ["app"]
+known-first-party = ["src"]
 force-wrap-aliases = true
 case-sensitive = true
 split-on-trailing-comma = true

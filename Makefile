@@ -42,7 +42,7 @@ lint: ## Lint code with Ruff and type-check with mypy
 	@echo "$(BLUE)Running Ruff lint...$(NC)"
 	ruff check .
 	@echo "$(BLUE)Running mypy...$(NC)"
-	mypy --explicit-package-bases app/
+	mypy --explicit-package-bases src/
 
 pre-commit: ## Run all pre-commit hooks on all files
 	@pre-commit run --all-files
@@ -53,4 +53,4 @@ check: ## Check code formatting and linting without making changes
 	@echo "$(BLUE)Checking lint...$(NC)"
 	ruff check .
 	@echo "$(BLUE)Checking types...$(NC)"
-	mypy --explicit-package-bases app/
+	mypy --explicit-package-bases src/
