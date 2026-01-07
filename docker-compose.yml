@@ -1,0 +1,21 @@
+services:
+  fluffy-invention-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fluffy-invention-backend
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    env_file:
+      - ../.env
+    networks:
+      - fluffy-invention-network
+    restart: unless-stopped
+
+
+networks:
+  fluffy-invention-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
