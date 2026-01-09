@@ -29,3 +29,16 @@ class InvalidPasswordHashException(BaseDomainException):
         """
         self.errors = errors
         super().__init__("Invalid password hash provided")
+
+
+class InvalidPasswordException(BaseDomainException):
+    """Exception raised for invalid passwords."""
+
+    def __init__(self, errors: list[str]) -> None:
+        """Initialize the InvalidPasswordException.
+
+        Args:
+            errors (list[str]): Variable length error messages describing the validation issues.
+        """
+        self.errors = errors
+        super().__init__("The password does not meet the security criteria")
