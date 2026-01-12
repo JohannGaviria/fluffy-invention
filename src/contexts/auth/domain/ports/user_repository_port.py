@@ -10,7 +10,7 @@ class UserRepositoryPort(ABC):
     """Abstract interface for User Repository operations."""
 
     @abstractmethod
-    async def find_by_email(self, email: EmailVO) -> UserEntity | None:
+    def find_by_email(self, email: EmailVO) -> UserEntity | None:
         """Find a user by their email address.
 
         Args:
@@ -22,7 +22,7 @@ class UserRepositoryPort(ABC):
         pass
 
     @abstractmethod
-    async def save(self, entity: UserEntity) -> UserEntity:
+    def save(self, entity: UserEntity) -> UserEntity:
         """Save a user entity to the repository.
 
         Args:

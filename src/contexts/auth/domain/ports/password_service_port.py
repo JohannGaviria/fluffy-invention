@@ -9,13 +9,10 @@ class PasswordServicePort(ABC):
     """Abstract interface for Password Service operations."""
 
     @abstractmethod
-    def verify(self, password: PasswordVO) -> bool:
-        """Verify the given password.
-
-        Args:
-            password (PasswordVO): The password value object to verify.
+    def generate(self) -> PasswordVO:
+        """Generate a temporary password.
 
         Returns:
-            bool: True if the password is valid, False otherwise.
+            PasswordVO: The password value object to verify.
         """
         pass
