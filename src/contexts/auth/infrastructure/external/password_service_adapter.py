@@ -17,12 +17,32 @@ class PasswordServiceAdapter(PasswordServicePort):
         Returns:
             PasswordVO: The generated password value object.
         """
-        characters = (
+        length = random.randint(8, 12)
+
+        required_chars = [
+            secrets.choice(string.ascii_lowercase),
+            secrets.choice(string.ascii_uppercase),
+            secrets.choice(string.digits),
+            secrets.choice(string.punctuation),
+        ]
+
+        # Ensure the password meets the required length
+        remaining_length = length - len(required_chars)
+
+        all_characters = (
             string.ascii_lowercase
             + string.ascii_uppercase
             + string.digits
             + string.punctuation
         )
-        return PasswordVO(
-            "".join(secrets.choice(characters) for _ in range(random.randint(8, 12)))
-        )
+
+        # Fill the rest of the password length with random choices
+        remaining_chars = [
+            secrets.choice(all_characters) for _ in range(remaining_length)
+        ]
+
+        # Combine and shuffle the characters to form the final password
+        password_chars = required_chars + remaining_chars
+        random.shuffle(password_chars)
+
+        return PasswordVO("".join(password_chars))

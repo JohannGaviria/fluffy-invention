@@ -12,17 +12,17 @@ class StaffEmailPolicyServiceAdapter(StaffEmailPolicyServicePort):
 
     def __init__(
         self,
-        allowed_domains: list[str],
-        allowed_roles: list[RolesEnum],
+        allowed_domains: str,
+        allowed_roles: RolesEnum,
     ) -> None:
         """Initialize the adapter with allowed domains and roles.
 
         Args:
-            allowed_domains (list[str]): List of allowed email domains.
-            allowed_roles (list[RolesEnum]): List of roles subject to email domain restrictions.
+            allowed_domains (str): The domains allowed for staff emails.
+            allowed_roles (RolesEnum): The roles allowed to use staff emails.
         """
-        self.allowed_domains = {d.lower() for d in allowed_domains}
-        self.allowed_roles = set(allowed_roles)
+        self.allowed_domains = allowed_domains
+        self.allowed_roles = allowed_roles
 
     def is_allowed(self, email: EmailVO, role: RolesEnum) -> bool:
         """Check if the email is allowed for the given role.
@@ -34,7 +34,12 @@ class StaffEmailPolicyServiceAdapter(StaffEmailPolicyServicePort):
         Returns:
             bool: True if the email is allowed for the role, False otherwise.
         """
-        if role not in self.allowed_roles:
+        allowed_domains = [
+            domains.strip() for domains in self.allowed_domains.split(",")
+        ]
+        allowed_roles = [roles.strip() for roles in self.allowed_roles.split(",")]
+
+        if role not in allowed_roles:
             return True
 
-        return email.domain in self.allowed_domains
+        return email.domain in allowed_domains

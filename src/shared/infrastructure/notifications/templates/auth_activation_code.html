@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            line-height: 1.6;
+        }
+        .email-wrapper {
+            background-color: #f0f4f8;
+            padding: 40px 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .header {
+            background: linear-gradient(135deg, #0a4d68 0%, #088395 100%);
+            padding: 50px 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #05bfdb 0%, #088395 100%);
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin: 8px 0 0 0;
+            font-weight: 400;
+        }
+        .content {
+            padding: 45px 40px;
+        }
+        .greeting {
+            font-size: 26px;
+            color: #1a2332;
+            margin: 0 0 24px 0;
+            font-weight: 600;
+        }
+        .message {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #4a5568;
+            margin: 0 0 20px 0;
+        }
+        .message strong {
+            color: #0a4d68;
+            font-weight: 600;
+        }
+        .info-box {
+            background: linear-gradient(135deg, #e8f5f7 0%, #d4eef3 100%);
+            border-left: 4px solid #088395;
+            padding: 20px 24px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        .info-box-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0a4d68;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-box-content {
+            font-size: 14px;
+            color: #2d3748;
+            margin: 0;
+            line-height: 1.6;
+        }
+        .code-container {
+            background-color: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 24px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+        }
+        .code-label {
+            font-size: 13px;
+            color: #718096;
+            margin: 0 0 12px 0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .activation-code {
+            font-size: 32px;
+            font-weight: 700;
+            color: #088395;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 4px;
+            margin: 0;
+            padding: 16px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            display: inline-block;
+            user-select: all;
+        }
+        .code-instructions {
+            font-size: 14px;
+            color: #4a5568;
+            margin: 16px 0 0 0;
+            font-style: italic;
+        }
+        .expiration-notice {
+            background: linear-gradient(135deg, #fff4e6 0%, #ffe8cc 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 18px 24px;
+            margin: 25px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .expiration-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .expiration-text {
+            margin: 0;
+            font-size: 14px;
+            color: #92400e;
+            line-height: 1.5;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
+            margin: 35px 0;
+        }
+        .footer {
+            background-color: #f8fafc;
+            padding: 40px 40px 35px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer-brand {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .footer-brand-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0a4d68;
+            margin: 0 0 5px 0;
+        }
+        .footer-tagline {
+            font-size: 13px;
+            color: #718096;
+            margin: 0;
+            font-style: italic;
+        }
+        .footer-links {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer-links a {
+            color: #088395;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 12px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover {
+            color: #0a4d68;
+        }
+        .footer-info {
+            text-align: center;
+            font-size: 12px;
+            color: #a0aec0;
+            margin: 20px 0 0 0;
+            line-height: 1.6;
+        }
+        .security-note {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 25px 0;
+        }
+        .security-note p {
+            margin: 0;
+            font-size: 13px;
+            color: #991b1b;
+            line-height: 1.6;
+        }
+        .security-note strong {
+            color: #7f1d1d;
+        }
+        @media only screen and (max-width: 600px) {
+            .email-wrapper {
+                padding: 20px 10px;
+            }
+            .content {
+                padding: 35px 25px;
+            }
+            .greeting {
+                font-size: 22px;
+            }
+            .activation-code {
+                font-size: 24px;
+                letter-spacing: 2px;
+                padding: 12px;
+            }
+            .footer {
+                padding: 30px 25px 25px;
+            }
+            .footer-links a {
+                display: block;
+                margin: 8px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="email-container">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo-container">
+                    <div class="logo-icon">🏥</div>
+                    <h1 class="logo">Fluffy Invention</h1>
+                </div>
+                <p class="header-subtitle">Medical Healthcare Solutions</p>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <h2 class="greeting">Welcome, {{ first_name }} {{ last_name }}!</h2>
+
+                <p class="message">
+                    Thank you for registering with <strong>Fluffy Invention</strong>. We're excited to have you join our healthcare community.
+                </p>
+
+                <p class="message">
+                    To complete your registration and access our medical services platform, please verify your email address by using the activation code below.
+                </p>
+
+                <!-- Info Box -->
+                <div class="info-box">
+                    <p class="info-box-title">
+                        <span>📋</span> How to activate your account
+                    </p>
+                    <p class="info-box-content">
+                        Copy the activation code and temporary password below. Paste the activation code into the verification field on our activation page, then use the temporary password to complete your first login.
+                    </p>
+                </div>
+
+                <!-- Activation Code -->
+                <div class="code-container">
+                    <p class="code-label">Your Activation Code</p>
+                    <p class="activation-code">{{ activation_code }}</p>
+                    <p class="code-instructions">Click on the code to select and copy it</p>
+                </div>
+
+                <!-- Temporary Password -->
+                <div class="code-container" style="border-color: #b794f4; background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);">
+                    <p class="code-label" style="color: #6b46c1;">Temporary Password</p>
+                    <p class="activation-code" style="color: #7c3aed; border-color: #ddd6fe;">{{ temporary_password }}</p>
+                    <p class="code-instructions">You will be required to change this password after your first login</p>
+                </div>
+
+                <!-- Expiration Notice -->
+                <div class="expiration-notice">
+                    <span class="expiration-icon">⏰</span>
+                    <p class="expiration-text">
+                        <strong>Important:</strong> This activation code will expire in <strong>{{ expiration_minutes }} minutes</strong> for your security.
+                    </p>
+                </div>
+
+                <div class="divider"></div>
+
+                <p class="message">
+                    Once activated, you'll have access to:
+                </p>
+                <p class="message" style="margin-left: 20px;">
+                    • Schedule medical appointments<br>
+                    • Access your medical records<br>
+                    • Communicate with healthcare providers<br>
+                    • Manage prescriptions and test results
+                </p>
+
+                <!-- Security Note -->
+                <div class="security-note">
+                    <p>
+                        <strong>Security Notice:</strong> If you did not create an account with Fluffy Invention, please disregard this email and contact our support team immediately.
+                    </p>
+                </div>
+
+                <div class="security-note">
+                    <p style="margin-top: 12px;">
+                        <strong>Important:</strong> For your security, you will be required to change your temporary password immediately after your first login. Never share your password with anyone.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-brand">
+                    <p class="footer-brand-name">Fluffy Invention</p>
+                    <p class="footer-tagline">Your Health, Our Priority</p>
+                </div>
+
+                <div class="footer-links">
+                    <a href="{{ website_url|default('#') }}">Website</a>
+                    <a href="{{ support_url|default('#') }}">Support Center</a>
+                    <a href="{{ privacy_url|default('#') }}">Privacy Policy</a>
+                </div>
+
+                <p class="footer-info">
+                    123 Medical Center Drive, Healthcare City, HC 12345<br>
+                    This is an automated message, please do not reply directly to this email.<br>
+                    © 2026 Fluffy Invention. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

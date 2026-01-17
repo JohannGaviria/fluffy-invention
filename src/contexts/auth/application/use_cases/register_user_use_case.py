@@ -23,7 +23,10 @@ from src.contexts.auth.domain.ports.staff_email_policy_service_port import (
 from src.contexts.auth.domain.ports.user_repository_port import UserRepositoryPort
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
 from src.shared.domain.cache_service_port import CacheServicePort
-from src.shared.domain.event_bus_service_port import EventBusServicePort
+from src.shared.domain.sender_notification_service_port import (
+    SenderNotificationServicePort,
+)
+from src.shared.domain.template_renderer_service_port import TemplateRendererServicePort
 
 
 class RegisterUserUseCase:
@@ -38,7 +41,8 @@ class RegisterUserUseCase:
         cache_service_port: CacheServicePort,
         staff_email_policy_service_port: StaffEmailPolicyServicePort,
         authorization_policy_service_port: AuthorizationPolicyServicePort,
-        event_bus_service_port: EventBusServicePort,
+        template_renderer_service_port: TemplateRendererServicePort,
+        sender_notification_service_port: SenderNotificationServicePort,
     ) -> None:
         """Initialize the RegisterUserUseCase with required ports.
 
@@ -50,7 +54,8 @@ class RegisterUserUseCase:
             cache_service_port (CacheServicePort): Port for caching services.
             staff_email_policy_service_port (StaffEmailPolicyServicePort): Port for staff email policy checks.
             authorization_policy_service_port (AuthorizationPolicyServicePort): Port for authorization policy checks.
-            event_bus_service_port (EventBusServicePort): Port for event bus operations.
+            template_renderer_service_port (TemplateRendererServicePort): Port for rendering templates.
+            sender_notification_service_port (SenderNotificationServicePort): Port for sending notifications.
         """
         self.user_repository_port = user_repository_port
         self.password_service_port = password_service_port
@@ -59,7 +64,8 @@ class RegisterUserUseCase:
         self.cache_service_port = cache_service_port
         self.staff_email_policy_service_port = staff_email_policy_service_port
         self.authorization_policy_service_port = authorization_policy_service_port
-        self.event_bus_service_port = event_bus_service_port
+        self.template_renderer_service_port = template_renderer_service_port
+        self.sender_notification_service_port = sender_notification_service_port
 
     def execute(self, command: RegisterUserCommand) -> None:
         """Register a new user based on the provided command.
@@ -86,7 +92,7 @@ class RegisterUserUseCase:
 
         # Check for existing user
         existing_user = self.user_repository_port.find_by_email(EmailVO(command.email))
-        if not existing_user:
+        if existing_user:
             raise EmailAlreadyExistsException(command.email)
 
         # Generate temporary password and hash it
@@ -104,24 +110,26 @@ class RegisterUserUseCase:
         user = self.user_repository_port.save(entity)
 
         # Generate activation code and cache it
-        cache_key = f"cache:auth:activation_code:{str(user.id)}"
+        key = f"cache:auth:activation_code:{str(user.id)}"
         activation_code = self.activation_code_service_port.generate()
         ttl = 15 * 60
-        cache_payload = {
+        payload = {
             "user_id": str(user.id),
             "email": str(user.email),
             "code": activation_code,
         }
-        self.cache_service_port.set(cache_key, ttl, cache_payload)
+        self.cache_service_port.set(key, ttl, payload)
 
-        # Publish activation code created event
-        event_key = "event.auth.activation_code.created"
-        event_payload = {
-            "user_id": user.id,
+        context = {
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "email": user.email,
             "temporary_password": temporary_password,
-            "code": activation_code,
+            "activation_code": activation_code,
+            "expiration_minutes": ttl // 60,
         }
-        self.event_bus_service_port.publisher(event_key, event_payload)
+        message = self.template_renderer_service_port.render(
+            "auth_activation_code.html", context
+        )
+        self.sender_notification_service_port.send(
+            user.email.value, "Activate your account", message
+        )
