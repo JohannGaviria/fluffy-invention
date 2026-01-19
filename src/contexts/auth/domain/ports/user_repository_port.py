@@ -1,6 +1,7 @@
 """This module contains the interface for the User Repository Port."""
 
 from abc import ABC, abstractmethod
+from uuid import UUID
 
 from src.contexts.auth.domain.entities.entity import UserEntity
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
@@ -34,10 +35,11 @@ class UserRepositoryPort(ABC):
         pass
 
     @abstractmethod
-    def status_update(self, status: bool) -> None:
+    def status_update(self, status: bool, user_id: UUID) -> None:
         """Update the status of a user.
 
         Args:
             status (bool): The new status to set.
+            user_id (UUID): The unique identifier of the user.
         """
         pass
