@@ -106,3 +106,11 @@ class ActivationCodeExpiredException(BaseDomainException):
     def __init__(self) -> None:
         """Initialize the ActivationCodeExpiredException."""
         super().__init__("The activation code has expired")
+
+
+class InvalidActivationCodeException(BaseDomainException):
+    """Exception raised when an activation code is invalid."""
+
+    def __init__(self) -> None:
+        """Initialize the InvalidActivationCodeException."""
+        super().__init__("The activation code is invalid")
