@@ -4,6 +4,9 @@ from fastapi import Depends
 from sqlmodel import Session
 
 from src.config import settings
+from src.contexts.auth.application.use_cases.activate_account_use_case import (
+    ActivateAccountUseCase,
+)
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
@@ -205,3 +208,19 @@ def get_register_user_use_case(
         template_renderer_service,
         sender_notification_service,
     )
+
+
+def get_activate_account_use_case(
+    user_repository: SQLModelRepositoryAdapter = Depends(get_user_repository),
+    cache_service: RedisCacheServiceAdapter = Depends(get_cache_service),
+) -> ActivateAccountUseCase:
+    """Dependency injector for ActivateAccountUseCase.
+
+    Args:
+        user_repository (SQLModelRepositoryAdapter): The user repository.
+        cache_service (RedisCacheServiceAdapter): The cache service.
+
+    Returns:
+        ActivateAccountUseCase: An instance of ActivateAccountUseCase.
+    """
+    return ActivateAccountUseCase(user_repository, cache_service)
