@@ -46,8 +46,11 @@ class ActivateAccountUseCase:
             raise ActivationCodeExpiredException()
 
         # Check if the activation code matches
-        if activation_code != existing_cache["activation_code"]:
+        if not activation_code == existing_cache.get("code"):
             raise InvalidActivationCodeException()
 
         # Activate the user account
         self.user_repository_port.status_update(True, user.id)
+
+        # Remove the activation code from cache
+        self.cache_service_port.delete(key)
