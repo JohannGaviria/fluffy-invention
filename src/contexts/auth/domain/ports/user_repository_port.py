@@ -32,3 +32,12 @@ class UserRepositoryPort(ABC):
             UserEntity: The saved user entity.
         """
         pass
+
+    @abstractmethod
+    def status_update(self, status: bool) -> None:
+        """Update the status of a user.
+
+        Args:
+            status (bool): The new status to set.
+        """
+        pass
