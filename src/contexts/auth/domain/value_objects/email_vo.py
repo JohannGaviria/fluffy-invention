@@ -51,6 +51,15 @@ class EmailVO(BaseValueObject):
         """
         return self.email
 
+    @property
+    def domain(self) -> str:
+        """Return the domain part of the email address.
+
+        Returns:
+            str: The domain of the email address.
+        """
+        return self.email.split("@")[1].lower()
+
     def __str__(self) -> str:
         """Return the string representation of the email.
 

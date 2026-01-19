@@ -52,10 +52,10 @@ class RedisClient:
             try:
                 logger.debug(message="Attempting to connect to Redis", attempt=attempt)
                 client = redis.Redis(
-                    host=settings.redis_host,
-                    port=settings.redis_port,
-                    db=settings.redis_db,
-                    password=settings.redis_password,
+                    host=settings.REDIS_HOST,
+                    port=settings.REDIS_PORT,
+                    db=settings.REDIS_DB,
+                    password=settings.REDIS_PASSWORD,
                     decode_responses=True,
                     socket_connect_timeout=5,
                     socket_timeout=5,

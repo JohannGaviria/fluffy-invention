@@ -29,3 +29,59 @@ class InvalidPasswordHashException(BaseDomainException):
         """
         self.errors = errors
         super().__init__("Invalid password hash provided")
+
+
+class InvalidPasswordException(BaseDomainException):
+    """Exception raised for invalid passwords."""
+
+    def __init__(self, errors: list[str]) -> None:
+        """Initialize the InvalidPasswordException.
+
+        Args:
+            errors (list[str]): Variable length error messages describing the validation issues.
+        """
+        self.errors = errors
+        super().__init__("The password does not meet the security criteria")
+
+
+class EmailAlreadyExistsException(BaseDomainException):
+    """Exception raised when an email already exists in the system."""
+
+    def __init__(self, email: str) -> None:
+        """Initialize the EmailAlreadyExistsException.
+
+        Args:
+            email (str): The email address that already exists.
+        """
+        self.email = email
+        super().__init__(f"Email '{email}' already exists")
+
+
+class InvalidCorporateEmailException(BaseDomainException):
+    """Exception raised when a corporate email does not meet policy requirements."""
+
+    def __init__(self, email: str, role: str) -> None:
+        """Initialize the InvalidCorporateEmailException.
+
+        Args:
+            email (str): The corporate email address.
+            role (str): The role associated with the email.
+        """
+        self.email = email
+        self.role = role
+        super().__init__(f"Corporate email '{email}' is not allowed for role '{role}'")
+
+
+class UnauthorizedUserRegistrationException(BaseDomainException):
+    """Exception raised when a user is not authorized to register new users."""
+
+    def __init__(self, role: str) -> None:
+        """Initialize the UnauthorizedUserRegistrationException.
+
+        Args:
+            role (str): The role of the user attempting the registration.
+        """
+        self.role = role
+        super().__init__(
+            f"User with role '{role}' is not authorized to register new users"
+        )

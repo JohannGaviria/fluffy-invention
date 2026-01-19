@@ -8,6 +8,8 @@ services:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     env_file:
       - ./.env
+    volumes:
+      - .:/app
     depends_on:
       - fluffy-invention-db
       - redis
