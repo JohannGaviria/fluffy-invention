@@ -48,3 +48,24 @@ class RegisterUserRequest(BaseModel):
             role=self.role,
             role_recorder=self.role_recorder,
         )
+
+
+class ActivateUserAccountRequest(BaseModel):
+    """Request schema for activating a user account.
+
+    Attributes:
+        activation_code (str): The activation code sent to the user's email.
+        email (str): The email address of the user.
+    """
+
+    activation_code: str
+    email: str
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "activation_code": "HA23E0",
+                "email": "johon.doe@example.com",
+            }
+        }
+    }

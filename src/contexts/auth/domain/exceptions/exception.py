@@ -85,3 +85,32 @@ class UnauthorizedUserRegistrationException(BaseDomainException):
         super().__init__(
             f"User with role '{role}' is not authorized to register new users"
         )
+
+
+class UserNotFoundException(BaseDomainException):
+    """Exception raised when a user is not found in the system."""
+
+    def __init__(self, field: str) -> None:
+        """Initialize the UserNotFoundException.
+
+        Args:
+            field (str): The field used to search for the user.
+        """
+        self.field = field
+        super().__init__(f"User not found with {field}")
+
+
+class ActivationCodeExpiredException(BaseDomainException):
+    """Exception raised when an activation code has expired."""
+
+    def __init__(self) -> None:
+        """Initialize the ActivationCodeExpiredException."""
+        super().__init__("The activation code has expired")
+
+
+class InvalidActivationCodeException(BaseDomainException):
+    """Exception raised when an activation code is invalid."""
+
+    def __init__(self) -> None:
+        """Initialize the InvalidActivationCodeException."""
+        super().__init__("The activation code is invalid")

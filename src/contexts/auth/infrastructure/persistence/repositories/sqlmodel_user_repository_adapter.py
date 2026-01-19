@@ -1,5 +1,7 @@
 """This module contains the SQLModel repository adapter for User Repository Port."""
 
+from uuid import UUID
+
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
 from sqlmodel import Session, select
 
@@ -68,6 +70,30 @@ class SQLModelRepositoryAdapter(UserRepositoryPort):
             self.session.commit()
             self.session.refresh(model)
             return UserMapper.to_entity(model)
+        except OperationalError as e:
+            self.session.rollback()
+            self.logger.error(message="Could not connect to database.", error=str(e))
+            raise DatabaseConnectionException("Could not connect to database.") from e
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            self.logger.error(message="Unexpected database error.", error=str(e))
+            raise UnexpectedDatabaseException("Unexpected database error.") from e
+
+    def status_update(self, status: bool, user_id: UUID) -> None:
+        """Update the active status of a user.
+
+        Args:
+            status (bool): New active status.
+            user_id (UUID): ID of the user to update.
+        """
+        try:
+            model = self.session.exec(
+                select(UserModel).where(UserModel.id == user_id)
+            ).first()
+            if model:
+                model.is_active = status
+                self.session.add(model)
+                self.session.commit()
         except OperationalError as e:
             self.session.rollback()
             self.logger.error(message="Could not connect to database.", error=str(e))

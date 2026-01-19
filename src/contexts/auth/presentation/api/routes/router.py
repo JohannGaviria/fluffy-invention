@@ -4,22 +4,32 @@ from fastapi import APIRouter, Depends, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
+from src.contexts.auth.application.use_cases.activate_account_use_case import (
+    ActivateAccountUseCase,
+)
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
 from src.contexts.auth.domain.exceptions.exception import (
+    ActivationCodeExpiredException,
     EmailAlreadyExistsException,
+    InvalidActivationCodeException,
     InvalidCorporateEmailException,
     InvalidEmailException,
     InvalidPasswordException,
     InvalidPasswordHashException,
     UnauthorizedUserRegistrationException,
+    UserNotFoundException,
 )
 from src.contexts.auth.presentation.api.dependencies.dependency import (
+    get_activate_account_use_case,
     get_logger,
     get_register_user_use_case,
 )
-from src.contexts.auth.presentation.api.schemas.schema import RegisterUserRequest
+from src.contexts.auth.presentation.api.schemas.schema import (
+    ActivateUserAccountRequest,
+    RegisterUserRequest,
+)
 from src.shared.domain.exception import (
     DatabaseConnectionException,
     MissingFieldException,
@@ -115,4 +125,74 @@ async def register_user(
         raise
     except Exception as e:
         logger.error("Unexpected error during registration", error=str(e))
+        raise
+
+
+@router.post(
+    path="/activate",
+    summary="",
+    response_model=SuccessResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ErrorsResponse,
+            "description": "Bad Request - Invalid input data.",
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "model": ErrorsResponse,
+            "description": "Not Found - User not found.",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ErrorsResponse,
+            "description": "Internal Server Error - Database or server error.",
+        },
+    },
+)
+async def activate_account(
+    request: ActivateUserAccountRequest,
+    use_case: ActivateAccountUseCase = Depends(get_activate_account_use_case),
+    logger: Logger = Depends(get_logger),
+) -> JSONResponse:
+    """Activate a user account.
+
+    This endpoint activates a user account using an activation code and email
+    provided in the request body. It handles various exceptions that may arise
+    during the activation process and returns appropriate HTTP responses.
+
+    Args:
+        request (ActivateUserAccountRequest): The account activation request data.
+        use_case (ActivateAccountUseCase): The use case for activating a user account.
+        logger (Logger): The logger instance for logging events.
+
+    Returns:
+        JSONResponse: A JSON response indicating success or failure of the activation.
+
+    Raises:
+        HTTPException: Raised for various error conditions during activation.
+        ActivationCodeExpiredException: If the activation code has expired.
+        InvalidActivationCodeException: If the activation code is invalid.
+        UserNotFoundException: If the user is not found.
+        DatabaseConnectionException: If there is a database connection error.
+        UnexpectedDatabaseException: For any unexpected database errors.
+    """
+    try:
+        use_case.execute(request.activation_code, request.email)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder(
+                SuccessResponse(message="User account activated successfully"),
+                exclude_none=True,
+            ),
+        )
+    except (ActivationCodeExpiredException, InvalidActivationCodeException) as e:
+        logger.warning("Account activation error", error=str(e))
+        raise
+    except UserNotFoundException as e:
+        logger.warning("User not found during account activation", error=str(e))
+        raise
+    except (DatabaseConnectionException, UnexpectedDatabaseException) as e:
+        logger.error("Database error during account activation", error=str(e))
+        raise
+    except Exception as e:
+        logger.error("Unexpected error during account activation", error=str(e))
         raise

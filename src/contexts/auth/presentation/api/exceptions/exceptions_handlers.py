@@ -5,12 +5,15 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from src.contexts.auth.domain.exceptions.exception import (
+    ActivationCodeExpiredException,
     EmailAlreadyExistsException,
+    InvalidActivationCodeException,
     InvalidCorporateEmailException,
     InvalidEmailException,
     InvalidPasswordException,
     InvalidPasswordHashException,
     UnauthorizedUserRegistrationException,
+    UserNotFoundException,
 )
 from src.shared.presentation.api.schemas import ErrorsResponse
 
@@ -154,4 +157,73 @@ def register_auth_exceptions_handlers(app: FastAPI) -> None:
                 )
             ),
             status_code=status.HTTP_403_FORBIDDEN,
+        )
+
+    @app.exception_handler(ActivationCodeExpiredException)
+    async def activation_code_expired_exception_handler(
+        request: Request, exc: ActivationCodeExpiredException
+    ) -> JSONResponse:
+        """Handle ActivationCodeExpiredException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (ActivationCodeExpiredException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="Activation code has expired",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    @app.exception_handler(InvalidActivationCodeException)
+    async def invalid_activation_code_exception_handler(
+        request: Request, exc: InvalidActivationCodeException
+    ) -> JSONResponse:
+        """Handle InvalidActivationCodeException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (InvalidActivationCodeException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="Invalid activation code",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+    @app.exception_handler(UserNotFoundException)
+    async def user_not_found_exception_handler(
+        request: Request, exc: UserNotFoundException
+    ) -> JSONResponse:
+        """Handle UserNotFoundException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (UserNotFoundException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="User not found",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_404_NOT_FOUND,
         )
