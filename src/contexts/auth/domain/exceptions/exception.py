@@ -114,3 +114,16 @@ class InvalidActivationCodeException(BaseDomainException):
     def __init__(self) -> None:
         """Initialize the InvalidActivationCodeException."""
         super().__init__("The activation code is invalid")
+
+
+class InvalidCredentialsException(BaseDomainException):
+    """Exception raised for invalid credentials."""
+
+    def __init__(self, errors: str) -> None:
+        """Initialize the InvalidCredentialsException.
+
+        Args:
+            errors (str): Variable length error messages describing the validation issues.
+        """
+        self.errors = errors
+        super().__init__("Invalid credentials provided")
