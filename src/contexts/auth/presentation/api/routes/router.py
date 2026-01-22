@@ -11,6 +11,7 @@ from src.contexts.auth.application.use_cases.login_use_case import LoginUseCase
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
+from src.contexts.auth.domain.entities.entity import RolesEnum
 from src.contexts.auth.domain.exceptions.exception import (
     AccountTemporarilyBlockedException,
     ActivationCodeExpiredException,
@@ -25,8 +26,10 @@ from src.contexts.auth.domain.exceptions.exception import (
     UserInactiveException,
     UserNotFoundException,
 )
+from src.contexts.auth.domain.value_objects.token_payload_vo import TokenPayloadVO
 from src.contexts.auth.presentation.api.dependencies.dependency import (
     get_activate_account_use_case,
+    get_current_user,
     get_logger,
     get_login_use_case,
     get_register_user_use_case,
@@ -76,6 +79,7 @@ async def register_user(
     request: RegisterUserRequest,
     use_case: RegisterUserUseCase = Depends(get_register_user_use_case),
     logger: Logger = Depends(get_logger),
+    current_user: TokenPayloadVO = Depends(get_current_user),
 ) -> JSONResponse:
     """Register a new user.
 
@@ -87,6 +91,7 @@ async def register_user(
         request (RegisterUserRequest): The user registration request data.
         use_case (RegisterUserUseCase): The use case for registering a user.
         logger (Logger): The logger instance for logging events.
+        current_user (TokenPayloadVO): The currently authenticated user performing the registration.
 
     Returns:
         JSONResponse: A JSON response indicating success or failure of the registration.
@@ -104,7 +109,7 @@ async def register_user(
         UnexpectedDatabaseException: For any unexpected database errors.
     """
     try:
-        use_case.execute(request.to_command())
+        use_case.execute(request.to_command(RolesEnum(current_user.role)))
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
             content=jsonable_encoder(
