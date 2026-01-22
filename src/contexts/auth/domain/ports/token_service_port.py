@@ -17,6 +17,18 @@ class TokenServicePort(ABC):
             payload (TokenPayloadVO): The data to encode in the token.
 
         Returns:
-            dict: access token and metadata.
+            AccessTokenVO: access token and metadata.
+        """
+        pass
+
+    @abstractmethod
+    def decode(self, token: str) -> TokenPayloadVO:
+        """Decode an access token.
+
+        Args:
+            token (str): The token to decode.
+
+        Returns:
+            TokenPayloadVO: The decoded token payload.
         """
         pass

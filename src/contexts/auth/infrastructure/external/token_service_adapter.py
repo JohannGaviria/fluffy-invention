@@ -45,3 +45,23 @@ class PyJWTTokenServiceAdapter(TokenServicePort):
             expires_in=self.expires_in,
             expires_at=datetime.now(UTC) + timedelta(minutes=self.expires_in),
         )
+
+    def decode(self, token: str) -> TokenPayloadVO:
+        """Decodes a JWT token.
+
+        Args:
+            token (str): The JWT token to decode.
+
+        Returns:
+            TokenPayloadVO: The decoded token payload value object.
+        """
+        payload = jwt.decode(token, self.secret_key, self.algorithm)
+        return TokenPayloadVO(
+            user_id=payload.get("sub"),
+            first_name=payload.get("first_name"),
+            last_name=payload.get("last_name"),
+            email=payload.get("email"),
+            role=payload.get("role"),
+            expires_in=payload.get("expires_in"),
+            jti=payload.get("jti"),
+        )
