@@ -1,6 +1,8 @@
 """This module contains dependency injection functions for the authentication context."""
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jwt import PyJWTError
 from sqlmodel import Session
 
 from src.config import settings
@@ -11,6 +13,7 @@ from src.contexts.auth.application.use_cases.login_use_case import LoginUseCase
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
+from src.contexts.auth.domain.value_objects.token_payload_vo import TokenPayloadVO
 from src.contexts.auth.infrastructure.external.activation_code_service_adapter import (
     ActivationCodeServiceAdapter,
 )
@@ -271,3 +274,43 @@ def get_login_use_case(
         settings.LOGIN_ATTEMPTS_LIMIT,
         settings.LOGIN_WAITING_TIME,
     )
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+
+
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    logger: Logger = Depends(get_logger),
+    token_service: PyJWTTokenServiceAdapter = Depends(get_token_service),
+) -> TokenPayloadVO:
+    """Dependency injector to get the current user from the JWT token.
+
+    Args:
+        token (str): The JWT token from the request.
+        logger (Logger): The logger instance.
+        token_service (TokenServicePort): The token service.
+
+    Returns:
+        TokenPayloadVO: The token payload value object.
+
+    Raises:
+        HTTPException: If the token is invalid or expired.
+    """
+    try:
+        payload = token_service.decode(token)
+        return TokenPayloadVO(
+            user_id=payload.user_id,
+            first_name=payload.first_name,
+            last_name=payload.last_name,
+            email=payload.email,
+            role=payload.role,
+            expires_in=payload.expires_in,
+            jti=payload.jti,
+        )
+    except PyJWTError as e:
+        logger.warning("Invalid or expired token", error=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+        ) from e
