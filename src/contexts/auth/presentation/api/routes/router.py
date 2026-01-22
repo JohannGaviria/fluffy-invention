@@ -7,27 +7,34 @@ from fastapi.responses import JSONResponse
 from src.contexts.auth.application.use_cases.activate_account_use_case import (
     ActivateAccountUseCase,
 )
+from src.contexts.auth.application.use_cases.login_use_case import LoginUseCase
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
 from src.contexts.auth.domain.exceptions.exception import (
+    AccountTemporarilyBlockedException,
     ActivationCodeExpiredException,
     EmailAlreadyExistsException,
     InvalidActivationCodeException,
     InvalidCorporateEmailException,
+    InvalidCredentialsException,
     InvalidEmailException,
     InvalidPasswordException,
     InvalidPasswordHashException,
     UnauthorizedUserRegistrationException,
+    UserInactiveException,
     UserNotFoundException,
 )
 from src.contexts.auth.presentation.api.dependencies.dependency import (
     get_activate_account_use_case,
     get_logger,
+    get_login_use_case,
     get_register_user_use_case,
 )
+from src.contexts.auth.presentation.api.mappers.mapper import AccessTokenResponseMapper
 from src.contexts.auth.presentation.api.schemas.schema import (
     ActivateUserAccountRequest,
+    LoginRequest,
     RegisterUserRequest,
 )
 from src.shared.domain.exception import (
@@ -195,4 +202,82 @@ async def activate_account(
         raise
     except Exception as e:
         logger.error("Unexpected error during account activation", error=str(e))
+        raise
+
+
+@router.post(
+    path="/login",
+    summary="User login",
+    response_model=SuccessResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ErrorsResponse,
+            "description": "Bad Request - Invalid input data.",
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "model": ErrorsResponse,
+            "description": "Unauthorized - Invalid credentials.",
+        },
+        status.HTTP_403_FORBIDDEN: {
+            "model": ErrorsResponse,
+            "description": "Forbidden - Account temporarily blocked.",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ErrorsResponse,
+            "description": "Internal Server Error - Database or server error.",
+        },
+    },
+)
+async def login_user(
+    request: LoginRequest,
+    use_case: LoginUseCase = Depends(get_login_use_case),
+    logger: Logger = Depends(get_logger),
+) -> JSONResponse:
+    """Authenticate a user and provide an access token.
+
+    This endpoint allows users to log in by providing their email and password.
+    It handles various exceptions that may arise during the login process and
+    returns appropriate HTTP responses.
+
+    Args:
+        request (RegisterUserRequest): The user login request data.
+        use_case (LoginUseCase): The use case for user login.
+        logger (Logger): The logger instance for logging events.
+
+    Returns:
+        JSONResponse: A JSON response containing the access token or indicating failure.
+
+    Raises:
+        HTTPException: Raised for various error conditions during login.
+        InvalidCredentialsException: If the provided credentials are invalid.
+        AccountTemporarilyBlockedException: If the account is temporarily blocked due to too many failed attempts.
+        DatabaseConnectionException: If there is a database connection error.
+        UnexpectedDatabaseException: For any unexpected database errors.
+    """
+    try:
+        response = use_case.execute(request.to_command())
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder(
+                SuccessResponse(
+                    message="Login successful",
+                    data=AccessTokenResponseMapper.response(response),
+                )
+            ),
+        )
+    except InvalidCredentialsException as e:
+        logger.warning("Invalid login credentials", error=str(e))
+        raise
+    except AccountTemporarilyBlockedException as e:
+        logger.warning("Account temporarily blocked", error=str(e))
+        raise
+    except UserInactiveException as e:
+        logger.warning("Inactive user account", error=str(e))
+        raise
+    except (DatabaseConnectionException, UnexpectedDatabaseException) as e:
+        logger.error("Database error during login", error=str(e))
+        raise
+    except Exception as e:
+        logger.error("Unexpected error during login", error=str(e))
         raise

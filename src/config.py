@@ -25,6 +25,15 @@ class Settings(BaseSettings):
     )
     ALLOWED_STAFF_ROLES: str = Field(..., validation_alias="ALLOWED_STAFF_ROLES")
 
+    # Security configuration
+    JWT_SECRET_KEY: str = Field(..., validation_alias="JWT_SECRET_KEY")
+    JWT_ALGORITHM: str = Field(..., validation_alias="JWT_ALGORITHM")
+    ACCESS_TOKEN_EXPIRES_IN: int = Field(
+        ..., validation_alias="ACCESS_TOKEN_EXPIRES_IN"
+    )
+    LOGIN_ATTEMPTS_LIMIT: int = Field(..., validation_alias="LOGIN_ATTEMPTS_LIMIT")
+    LOGIN_WAITING_TIME: int = Field(..., validation_alias="LOGIN_WAITING_TIME")
+
     # Database configuration
     DATABASE_URL: str = Field(..., validation_alias="DATABASE_URL")
     DB_PORT: int = Field(..., validation_alias="DB_PORT")

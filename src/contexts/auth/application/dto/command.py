@@ -20,3 +20,16 @@ class RegisterUserCommand:
     email: str
     role: str
     role_recorder: str
+
+
+@dataclass
+class LoginCommand:
+    """Command DTO for login of user.
+
+    Attributes:
+        email (str): The email address of the user.
+        password (str): The password of the user.
+    """
+
+    email: str
+    password: str
