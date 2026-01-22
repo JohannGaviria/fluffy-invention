@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
 from sqlmodel import Session, select
 
-from src.contexts.auth.domain.entities.entity import UserEntity
+from src.contexts.auth.domain.entities.entity import RolesEnum, UserEntity
 from src.contexts.auth.domain.ports.user_repository_port import UserRepositoryPort
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
 from src.contexts.auth.infrastructure.persistence.mappers.mapper import UserMapper
@@ -100,5 +100,26 @@ class SQLModelRepositoryAdapter(UserRepositoryPort):
             raise DatabaseConnectionException("Could not connect to database.") from e
         except SQLAlchemyError as e:
             self.session.rollback()
+            self.logger.error(message="Unexpected database error.", error=str(e))
+            raise UnexpectedDatabaseException("Unexpected database error.") from e
+
+    def find_by_role(self, role: RolesEnum) -> list[UserEntity]:
+        """Find users by their role.
+
+        Args:
+            role (RolesEnum): The role to search for.
+
+        Returns:
+            list[UserEntity]: A list of user entities with the specified role.
+        """
+        try:
+            models = self.session.exec(
+                select(UserModel).where(UserModel.role == role)
+            ).all()
+            return [UserMapper.to_entity(model) for model in models]
+        except OperationalError as e:
+            self.logger.error(message="Could not connect to database.", error=str(e))
+            raise DatabaseConnectionException("Could not connect to database.") from e
+        except SQLAlchemyError as e:
             self.logger.error(message="Unexpected database error.", error=str(e))
             raise UnexpectedDatabaseException("Unexpected database error.") from e

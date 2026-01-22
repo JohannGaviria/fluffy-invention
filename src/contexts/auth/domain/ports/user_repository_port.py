@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from src.contexts.auth.domain.entities.entity import UserEntity
+from src.contexts.auth.domain.entities.entity import RolesEnum, UserEntity
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
 
 
@@ -41,5 +41,17 @@ class UserRepositoryPort(ABC):
         Args:
             status (bool): The new status to set.
             user_id (UUID): The unique identifier of the user.
+        """
+        pass
+
+    @abstractmethod
+    def find_by_role(self, role: RolesEnum) -> list[UserEntity]:
+        """Find users by their role.
+
+        Args:
+            role (RolesEnum): The role to search for.
+
+        Returns:
+            list[UserEntity]: A list of user entities with the specified role.
         """
         pass

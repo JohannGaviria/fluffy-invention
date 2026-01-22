@@ -147,3 +147,11 @@ class UserInactiveException(BaseDomainException):
     def __init__(self) -> None:
         """Initialize the UserInactiveException."""
         super().__init__("The user account is inactive")
+
+
+class AdminUserAlreadyExistsException(BaseDomainException):
+    """Exception raised when an admin user already exists in the system."""
+
+    def __init__(self) -> None:
+        """Initialize the AdminUserAlreadyExistsException."""
+        super().__init__("An admin user already exists in the system")

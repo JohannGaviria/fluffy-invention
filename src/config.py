@@ -33,6 +33,13 @@ class Settings(BaseSettings):
     )
     LOGIN_ATTEMPTS_LIMIT: int = Field(..., validation_alias="LOGIN_ATTEMPTS_LIMIT")
     LOGIN_WAITING_TIME: int = Field(..., validation_alias="LOGIN_WAITING_TIME")
+    INITIAL_ADMIN_FIRST_NAME: str = Field(
+        ..., validation_alias="INITIAL_ADMIN_FIRST_NAME"
+    )
+    INITIAL_ADMIN_LAST_NAME: str = Field(
+        ..., validation_alias="INITIAL_ADMIN_LAST_NAME"
+    )
+    INITIAL_ADMIN_EMAIL: str = Field(..., validation_alias="INITIAL_ADMIN_EMAIL")
 
     # Database configuration
     DATABASE_URL: str = Field(..., validation_alias="DATABASE_URL")
