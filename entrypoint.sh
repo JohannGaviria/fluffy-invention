@@ -10,6 +10,9 @@ NC='\033[0m'
 echo ${GREEN} "Applying migrations..." ${NC}
 alembic upgrade head
 
+echo "Bootstrapping initial admin if needed..."
+python3 -m src.contexts.auth.presentation.cli.create_first_admin_cli
+
 echo ${GREEN} "Starting application in $ENVIRONMENT mode..." ${NC}
 echo ${GREEN} "Host: 0.0.0.0, Port: $BACKEND_PORT" ${NC}
 

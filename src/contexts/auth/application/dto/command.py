@@ -33,3 +33,18 @@ class LoginCommand:
 
     email: str
     password: str
+
+
+@dataclass
+class CreateAdminCommand:
+    """Command DTO for registering a new user.
+
+    Attributes:
+        first_name (str): The first name of the user.
+        last_name (str): The last name of the user.
+        email (str): The email address of the user.
+    """
+
+    first_name: str
+    last_name: str
+    email: str
