@@ -119,11 +119,31 @@ class InvalidActivationCodeException(BaseDomainException):
 class InvalidCredentialsException(BaseDomainException):
     """Exception raised for invalid credentials."""
 
-    def __init__(self, errors: str) -> None:
+    def __init__(self) -> None:
         """Initialize the InvalidCredentialsException.
 
         Args:
             errors (str): Variable length error messages describing the validation issues.
         """
-        self.errors = errors
         super().__init__("Invalid credentials provided")
+
+
+class AccountTemporarilyBlockedException(BaseDomainException):
+    """Exception raised for account temporarily blocked."""
+
+    def __init__(self, error: str) -> None:
+        """Initialize the AccountTemporarilyBlockedException.
+
+        Args:
+            error (str): Variable length error messages describing the validation issues.
+        """
+        self.error = error
+        super().__init__("Account temporarily blocked provided")
+
+
+class UserInactiveException(BaseDomainException):
+    """Exception raised when a user account is inactive."""
+
+    def __init__(self) -> None:
+        """Initialize the UserInactiveException."""
+        super().__init__("The user account is inactive")

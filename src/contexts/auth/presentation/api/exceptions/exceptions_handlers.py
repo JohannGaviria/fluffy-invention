@@ -5,14 +5,17 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from src.contexts.auth.domain.exceptions.exception import (
+    AccountTemporarilyBlockedException,
     ActivationCodeExpiredException,
     EmailAlreadyExistsException,
     InvalidActivationCodeException,
     InvalidCorporateEmailException,
+    InvalidCredentialsException,
     InvalidEmailException,
     InvalidPasswordException,
     InvalidPasswordHashException,
     UnauthorizedUserRegistrationException,
+    UserInactiveException,
     UserNotFoundException,
 )
 from src.shared.presentation.api.schemas import ErrorsResponse
@@ -226,4 +229,73 @@ def register_auth_exceptions_handlers(app: FastAPI) -> None:
                 )
             ),
             status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    @app.exception_handler(InvalidCredentialsException)
+    async def invalid_credentials_exception_handler(
+        request: Request, exc: InvalidCredentialsException
+    ) -> JSONResponse:
+        """Handle InvalidCredentialsException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (InvalidCredentialsException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="Invalid credentials",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    @app.exception_handler(AccountTemporarilyBlockedException)
+    async def account_temporarily_blocked_exception_handler(
+        request: Request, exc: AccountTemporarilyBlockedException
+    ) -> JSONResponse:
+        """Handle AccountTemporarilyBlockedException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (AccountTemporarilyBlockedException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="Account temporarily blocked",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_423_LOCKED,
+        )
+
+    @app.exception_handler(UserInactiveException)
+    async def user_inactive_exception_handler(
+        request: Request, exc: UserInactiveException
+    ) -> JSONResponse:
+        """Handle UserInactiveException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (UserInactiveException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="User account is inactive",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_403_FORBIDDEN,
         )

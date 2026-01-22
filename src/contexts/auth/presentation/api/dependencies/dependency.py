@@ -7,6 +7,7 @@ from src.config import settings
 from src.contexts.auth.application.use_cases.activate_account_use_case import (
     ActivateAccountUseCase,
 )
+from src.contexts.auth.application.use_cases.login_use_case import LoginUseCase
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
@@ -24,6 +25,9 @@ from src.contexts.auth.infrastructure.external.password_service_adapter import (
 )
 from src.contexts.auth.infrastructure.external.staff_email_policy_service_adapter import (
     StaffEmailPolicyServiceAdapter,
+)
+from src.contexts.auth.infrastructure.external.token_service_adapter import (
+    PyJWTTokenServiceAdapter,
 )
 from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_user_repository_adapter import (
     SQLModelRepositoryAdapter,
@@ -224,3 +228,46 @@ def get_activate_account_use_case(
         ActivateAccountUseCase: An instance of ActivateAccountUseCase.
     """
     return ActivateAccountUseCase(user_repository, cache_service)
+
+
+def get_token_service() -> PyJWTTokenServiceAdapter:
+    """Get the token service adapter.
+
+    Returns:
+        TokenServicePort: An instance of TokenServicePort.
+    """
+    return PyJWTTokenServiceAdapter(
+        settings.ACCESS_TOKEN_EXPIRES_IN,
+        settings.JWT_SECRET_KEY,
+        settings.JWT_ALGORITHM,
+    )
+
+
+def get_login_use_case(
+    user_repository: SQLModelRepositoryAdapter = Depends(get_user_repository),
+    password_hash_service: PasswordHashServiceAdapter = Depends(
+        get_password_hash_service
+    ),
+    token_service: PyJWTTokenServiceAdapter = Depends(get_token_service),
+    cache_service: RedisCacheServiceAdapter = Depends(get_cache_service),
+) -> LoginUseCase:
+    """Dependency injector for LoginUseCase.
+
+    Args:
+        user_repository (SQLModelRepositoryAdapter): The user repository.
+        password_hash_service (PasswordHashServiceAdapter): The password hash service.
+        token_service (TokenServicePort): The token service.
+        cache_service (RedisCacheServiceAdapter): The cache service.
+
+    Returns:
+        LoginUseCase: An instance of LoginUseCase.
+    """
+    return LoginUseCase(
+        user_repository,
+        password_hash_service,
+        token_service,
+        cache_service,
+        settings.ACCESS_TOKEN_EXPIRES_IN,
+        settings.LOGIN_ATTEMPTS_LIMIT,
+        settings.LOGIN_WAITING_TIME,
+    )

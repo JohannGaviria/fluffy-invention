@@ -20,3 +20,16 @@ class PasswordHashServicePort(ABC):
             PasswordHashVO: The hashed password value object.
         """
         pass
+
+    @abstractmethod
+    def verify(self, plain: PasswordVO, hashed: PasswordHashVO) -> bool:
+        """Verify that the plain password matches the hashed password.
+
+        Args:
+            plain (PasswordVO): The plain password value object.
+            hashed (PasswordHashVO): The hashed password value object.
+
+        Returns:
+            bool: True if the passwords match, False otherwise.
+        """
+        pass

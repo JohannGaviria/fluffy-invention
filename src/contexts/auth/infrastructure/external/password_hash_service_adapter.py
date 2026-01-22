@@ -24,3 +24,15 @@ class PasswordHashServiceAdapter(PasswordHashServicePort):
             PasswordHashVO: The hashed password.
         """
         return PasswordHashVO(self.context.hash(password.value))
+
+    def verify(self, plain: PasswordVO, hashed: PasswordHashVO) -> bool:
+        """Verify the given password.
+
+        Args:
+            plain (PasswordVO): The plain password to verify.
+            hashed (PasswordHashVO): The hashed password to compare against.
+
+        Returns:
+            bool: True if the password is correct.
+        """
+        return self.context.verify(plain.value, hashed.value)
