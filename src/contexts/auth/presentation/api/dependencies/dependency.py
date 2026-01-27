@@ -32,6 +32,12 @@ from src.contexts.auth.infrastructure.external.staff_email_policy_service_adapte
 from src.contexts.auth.infrastructure.external.token_service_adapter import (
     PyJWTTokenServiceAdapter,
 )
+from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_doctor_repository_adapter import (
+    SQLModelDoctorRepositoryAdapter,
+)
+from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_patient_repository_adapter import (
+    SQLModelPatientRepositoryAdapter,
+)
 from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_user_repository_adapter import (
     SQLModelRepositoryAdapter,
 )
@@ -71,6 +77,36 @@ def get_user_repository(
         SQLModelRepositoryAdapter: An instance of SQLModelRepositoryAdapter.
     """
     return SQLModelRepositoryAdapter(session, logger)
+
+
+def get_patient_repository(
+    session: Session = Depends(get_session), logger: Logger = Depends(get_logger)
+) -> SQLModelPatientRepositoryAdapter:
+    """Get the SQLModel patient repository adapter.
+
+    Args:
+        session (Session): The database session.
+        logger (Logger): The logger instance.
+
+    Returns:
+        SQLModelPatientRepositoryAdapter: An instance of SQLModelPatientRepositoryAdapter.
+    """
+    return SQLModelPatientRepositoryAdapter(session, logger)
+
+
+def get_doctor_repository(
+    session: Session = Depends(get_session), logger: Logger = Depends(get_logger)
+) -> SQLModelDoctorRepositoryAdapter:
+    """Get the SQLModel doctor repository adapter.
+
+    Args:
+        session (Session): The database session.
+        logger (Logger): The logger instance.
+
+    Returns:
+        SQLModelDoctorRepositoryAdapter: An instance of SQLModelDoctorRepositoryAdapter.
+    """
+    return SQLModelDoctorRepositoryAdapter(session, logger)
 
 
 def get_activation_code_service() -> ActivationCodeServiceAdapter:
@@ -167,6 +203,10 @@ def get_sender_notification_service(
 
 def get_register_user_use_case(
     user_repository: SQLModelRepositoryAdapter = Depends(get_user_repository),
+    patient_repository: SQLModelPatientRepositoryAdapter = Depends(
+        get_patient_repository
+    ),
+    doctor_repository: SQLModelDoctorRepositoryAdapter = Depends(get_doctor_repository),
     password_service: PasswordServiceAdapter = Depends(get_password_service),
     password_hash_service: PasswordHashServiceAdapter = Depends(
         get_password_hash_service
@@ -192,6 +232,8 @@ def get_register_user_use_case(
 
     Args:
         user_repository (SQLModelRepositoryAdapter): The user repository.
+        patient_repository (SQLModelPatientRepositoryAdapter): The patient repository.
+        doctor_repository (SQLModelDoctorRepositoryAdapter): The doctor repository.
         password_service (PasswordServiceAdapter): The password service.
         password_hash_service (PasswordHashServiceAdapter): The password hash service.
         activation_code_service (ActivationCodeServiceAdapter): The activation code service.
@@ -206,6 +248,8 @@ def get_register_user_use_case(
     """
     return RegisterUserUseCase(
         user_repository,
+        patient_repository,
+        doctor_repository,
         password_service,
         password_hash_service,
         activation_code_service,
