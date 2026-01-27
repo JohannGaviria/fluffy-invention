@@ -167,10 +167,10 @@ class DoctorEntity(BaseEntity):
     """
 
     user_id: UUID
-    specialty_id: UUID
     license_number: str
     experience_years: int
     is_active: bool
+    specialty_id: UUID | None
     qualifications: str | None
     bio: str | None
 
@@ -178,10 +178,10 @@ class DoctorEntity(BaseEntity):
     def create(
         cls,
         user_id: UUID,
-        specialty_id: UUID,
         license_number: str,
         experience_years: int,
         is_active: bool = True,
+        specialty_id: UUID | None = None,
         qualifications: str | None = None,
         bio: str | None = None,
     ) -> "DoctorEntity":
@@ -189,10 +189,10 @@ class DoctorEntity(BaseEntity):
 
         Args:
             user_id (UUID): ID of the associated user.
-            specialty_id (UUID): ID of the specialty.
             license_number (str): License number of the doctor.
             experience_years (int): Years of experience.
             is_active (bool): Indicates if the doctor is active.
+            specialty_id (UUID | None): ID of the specialty.
             qualifications (str | None): Qualifications of the doctor.
             bio (str | None): Bio of the doctor.
 
@@ -201,7 +201,6 @@ class DoctorEntity(BaseEntity):
         """
         REQUIRED_FIELDS = {
             "user_id": user_id,
-            "specialty_id": specialty_id,
             "license_number": license_number,
             "experience_years": experience_years,
         }

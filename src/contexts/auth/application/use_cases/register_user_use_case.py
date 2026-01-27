@@ -1,7 +1,16 @@
 """This module contains the use case for registering a new user."""
 
-from src.contexts.auth.application.dto.command import RegisterUserCommand
-from src.contexts.auth.domain.entities.entity import RolesEnum, UserEntity
+from src.contexts.auth.application.dto.command import (
+    DoctorProfileCommand,
+    PatientProfileCommand,
+    RegisterUserCommand,
+)
+from src.contexts.auth.domain.entities.entity import (
+    DoctorEntity,
+    PatientEntity,
+    RolesEnum,
+    UserEntity,
+)
 from src.contexts.auth.domain.exceptions.exception import (
     EmailAlreadyExistsException,
     InvalidCorporateEmailException,
@@ -13,16 +22,19 @@ from src.contexts.auth.domain.ports.activation_code_service_port import (
 from src.contexts.auth.domain.ports.authorization_policy_service_port import (
     AuthorizationPolicyServicePort,
 )
+from src.contexts.auth.domain.ports.doctor_repository_port import DoctorRepositoryPort
 from src.contexts.auth.domain.ports.password_hash_service_port import (
     PasswordHashServicePort,
 )
 from src.contexts.auth.domain.ports.password_service_port import PasswordServicePort
+from src.contexts.auth.domain.ports.patient_repository_port import PatientRepositoryPort
 from src.contexts.auth.domain.ports.staff_email_policy_service_port import (
     StaffEmailPolicyServicePort,
 )
 from src.contexts.auth.domain.ports.user_repository_port import UserRepositoryPort
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
 from src.shared.domain.cache_service_port import CacheServicePort
+from src.shared.domain.exception import MissingFieldException
 from src.shared.domain.sender_notification_service_port import (
     SenderNotificationServicePort,
 )
@@ -35,6 +47,8 @@ class RegisterUserUseCase:
     def __init__(
         self,
         user_repository_port: UserRepositoryPort,
+        patient_repository_port: PatientRepositoryPort,
+        doctor_repository_port: DoctorRepositoryPort,
         password_service_port: PasswordServicePort,
         password_hash_service_port: PasswordHashServicePort,
         activation_code_service_port: ActivationCodeServicePort,
@@ -48,6 +62,8 @@ class RegisterUserUseCase:
 
         Args:
             user_repository_port (UserRepositoryPort): Port for user repository operations.
+            patient_repository_port (PatientRepositoryPort): Port for patient repository operations.
+            doctor_repository_port (DoctorRepositoryPort): Port for doctor repository operations.
             password_service_port (PasswordServicePort): Port for password generation.
             password_hash_service_port (PasswordHashServicePort): Port for password hashing.
             activation_code_service_port (ActivationCodeServicePort): Port for activation code generation.
@@ -58,6 +74,8 @@ class RegisterUserUseCase:
             sender_notification_service_port (SenderNotificationServicePort): Port for sending notifications.
         """
         self.user_repository_port = user_repository_port
+        self.patient_repository_port = patient_repository_port
+        self.doctor_repository_port = doctor_repository_port
         self.password_service_port = password_service_port
         self.password_hash_service_port = password_hash_service_port
         self.activation_code_service_port = activation_code_service_port
@@ -108,6 +126,35 @@ class RegisterUserUseCase:
             role=RolesEnum(command.role),
         )
         user = self.user_repository_port.save(entity)
+
+        if command.role == "patient":
+            if not isinstance(command.profile, PatientProfileCommand):
+                raise MissingFieldException(
+                    "profile", "Patient profile is required for patient role"
+                )
+            patient_entity = PatientEntity.create(
+                user_id=user.id,
+                document=command.profile.document,
+                phone=command.profile.phone,
+                birth_date=command.profile.birth_date,
+            )
+            self.patient_repository_port.save(patient_entity)
+
+        if command.role == "doctor":
+            if not isinstance(command.profile, DoctorProfileCommand):
+                raise MissingFieldException(
+                    "profile", "Doctor profile is required for doctor role"
+                )
+
+            doctor_entity = DoctorEntity.create(
+                user_id=user.id,
+                license_number=command.profile.license_number,
+                experience_years=command.profile.experience_years,
+                specialty_id=command.profile.specialty_id,
+                qualifications=command.profile.qualifications,
+                bio=command.profile.bio,
+            )
+            self.doctor_repository_port.save(doctor_entity)
 
         # Generate activation code and cache it
         key = f"cache:auth:activation_code:{str(user.id)}"
