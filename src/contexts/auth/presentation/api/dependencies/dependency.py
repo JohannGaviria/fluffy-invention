@@ -14,24 +14,6 @@ from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
 from src.contexts.auth.domain.value_objects.token_payload_vo import TokenPayloadVO
-from src.contexts.auth.infrastructure.external.activation_code_service_adapter import (
-    ActivationCodeServiceAdapter,
-)
-from src.contexts.auth.infrastructure.external.authorization_policy_service_adapter import (
-    AuthorizationPolicyServiceAdapter,
-)
-from src.contexts.auth.infrastructure.external.password_hash_service_adapter import (
-    PasswordHashServiceAdapter,
-)
-from src.contexts.auth.infrastructure.external.password_service_adapter import (
-    PasswordServiceAdapter,
-)
-from src.contexts.auth.infrastructure.external.staff_email_policy_service_adapter import (
-    StaffEmailPolicyServiceAdapter,
-)
-from src.contexts.auth.infrastructure.external.token_service_adapter import (
-    PyJWTTokenServiceAdapter,
-)
 from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_doctor_repository_adapter import (
     SQLModelDoctorRepositoryAdapter,
 )
@@ -40,6 +22,24 @@ from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_patient_
 )
 from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_user_repository_adapter import (
     SQLModelRepositoryAdapter,
+)
+from src.contexts.auth.infrastructure.policies.authorization_policy_service_adapter import (
+    AuthorizationPolicyServiceAdapter,
+)
+from src.contexts.auth.infrastructure.policies.staff_email_policy_service_adapter import (
+    StaffEmailPolicyServiceAdapter,
+)
+from src.contexts.auth.infrastructure.security.activation_code_service_adapter import (
+    ActivationCodeServiceAdapter,
+)
+from src.contexts.auth.infrastructure.security.password_hash_service_adapter import (
+    PasswordHashServiceAdapter,
+)
+from src.contexts.auth.infrastructure.security.password_service_adapter import (
+    PasswordServiceAdapter,
+)
+from src.contexts.auth.infrastructure.security.token_service_adapter import (
+    PyJWTTokenServiceAdapter,
 )
 from src.shared.infrastructure.cache.redis_cache_service_adapter import (
     RedisCacheServiceAdapter,

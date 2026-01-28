@@ -3,7 +3,7 @@
 import random
 import string
 
-from src.contexts.auth.domain.ports.activation_code_service_port import (
+from src.contexts.auth.domain.ports.services.activation_code_service_port import (
     ActivationCodeServicePort,
 )
 

@@ -5,7 +5,7 @@ from typing import cast
 
 from redis import RedisError
 
-from src.shared.domain.cache_service_port import CacheServicePort
+from src.shared.domain.ports.services.cache_service_port import CacheServicePort
 from src.shared.infrastructure.cache.redis_client import RedisClient
 from src.shared.infrastructure.logging.logger import Logger
 

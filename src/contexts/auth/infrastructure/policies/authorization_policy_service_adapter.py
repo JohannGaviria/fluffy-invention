@@ -1,7 +1,7 @@
 """This module contains the AuthorizationPolicyServiceAdapter class implementation."""
 
 from src.contexts.auth.domain.entities.entity import RolesEnum
-from src.contexts.auth.domain.ports.authorization_policy_service_port import (
+from src.contexts.auth.domain.ports.services.authorization_policy_service_port import (
     AuthorizationPolicyServicePort,
 )
 

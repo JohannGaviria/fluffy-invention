@@ -1,7 +1,7 @@
 """This module contains the StaffEmailPolicyServiceAdapter class implementation."""
 
 from src.contexts.auth.domain.entities.entity import RolesEnum
-from src.contexts.auth.domain.ports.staff_email_policy_service_port import (
+from src.contexts.auth.domain.ports.services.staff_email_policy_service_port import (
     StaffEmailPolicyServicePort,
 )
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO

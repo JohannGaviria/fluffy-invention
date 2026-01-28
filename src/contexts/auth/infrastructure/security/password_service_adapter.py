@@ -4,7 +4,9 @@ import random
 import secrets
 import string
 
-from src.contexts.auth.domain.ports.password_service_port import PasswordServicePort
+from src.contexts.auth.domain.ports.services.password_service_port import (
+    PasswordServicePort,
+)
 from src.contexts.auth.domain.value_objects.password_vo import PasswordVO
 
 

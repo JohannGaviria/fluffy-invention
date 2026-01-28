@@ -2,7 +2,7 @@
 
 from passlib.context import CryptContext
 
-from src.contexts.auth.domain.ports.password_hash_service_port import (
+from src.contexts.auth.domain.ports.services.password_hash_service_port import (
     PasswordHashServicePort,
 )
 from src.contexts.auth.domain.value_objects.password_hash_vo import PasswordHashVO
