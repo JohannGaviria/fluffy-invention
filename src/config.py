@@ -41,6 +41,12 @@ class Settings(BaseSettings):
     )
     INITIAL_ADMIN_EMAIL: str = Field(..., validation_alias="INITIAL_ADMIN_EMAIL")
 
+    # CORS configuration
+    CORS_ALLOW_ORIGINS: str = Field(..., validation_alias="CORS_ALLOW_ORIGINS")
+    CORS_ALLOW_CREDENTIALS: bool = Field(..., validation_alias="CORS_ALLOW_CREDENTIALS")
+    CORS_ALLOW_METHODS: str = Field(..., validation_alias="CORS_ALLOW_METHODS")
+    CORS_ALLOW_HEADERS: str = Field(..., validation_alias="CORS_ALLOW_HEADERS")
+
     # Database configuration
     DATABASE_URL: str = Field(..., validation_alias="DATABASE_URL")
     DB_PORT: int = Field(..., validation_alias="DB_PORT")
