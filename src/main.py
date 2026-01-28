@@ -8,7 +8,9 @@ from src.contexts.auth.presentation.api.exceptions.exceptions_handlers import (
     register_auth_exceptions_handlers,
 )
 from src.contexts.auth.presentation.api.routes.router import router
-from src.shared.presentation.api.exceptions_handlers import register_exceptions_handlers
+from src.shared.presentation.api.exceptions.exceptions_handlers import (
+    register_exceptions_handlers,
+)
 
 app = FastAPI(
     title=settings.APP_NAME,

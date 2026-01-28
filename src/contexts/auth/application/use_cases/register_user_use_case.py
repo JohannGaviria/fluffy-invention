@@ -33,12 +33,14 @@ from src.contexts.auth.domain.ports.staff_email_policy_service_port import (
 )
 from src.contexts.auth.domain.ports.user_repository_port import UserRepositoryPort
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
-from src.shared.domain.cache_service_port import CacheServicePort
-from src.shared.domain.exception import MissingFieldException
-from src.shared.domain.sender_notification_service_port import (
+from src.shared.domain.exceptions.exception import MissingFieldException
+from src.shared.domain.ports.services.cache_service_port import CacheServicePort
+from src.shared.domain.ports.services.sender_notification_service_port import (
     SenderNotificationServicePort,
 )
-from src.shared.domain.template_renderer_service_port import TemplateRendererServicePort
+from src.shared.domain.ports.services.template_renderer_service_port import (
+    TemplateRendererServicePort,
+)
 
 
 class RegisterUserUseCase:

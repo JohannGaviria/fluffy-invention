@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 
 from src.contexts.auth.domain.exceptions.exception import InvalidPasswordException
-from src.shared.domain.value_object import BaseValueObject
+from src.shared.domain.value_objects.value_object import BaseValueObject
 
 
 @dataclass(frozen=True)

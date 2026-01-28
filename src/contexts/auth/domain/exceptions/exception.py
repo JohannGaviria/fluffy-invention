@@ -1,6 +1,6 @@
 """This module contains custom exceptions for authentication domain errors."""
 
-from src.shared.domain.exception import BaseDomainException
+from src.shared.domain.exceptions.exception import BaseDomainException
 
 
 class InvalidEmailException(BaseDomainException):

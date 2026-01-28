@@ -40,13 +40,13 @@ from src.contexts.auth.presentation.api.schemas.schema import (
     LoginRequest,
     RegisterUserRequest,
 )
-from src.shared.domain.exception import (
+from src.shared.domain.exceptions.exception import (
     DatabaseConnectionException,
     MissingFieldException,
     UnexpectedDatabaseException,
 )
 from src.shared.infrastructure.logging.logger import Logger
-from src.shared.presentation.api.schemas import ErrorsResponse, SuccessResponse
+from src.shared.presentation.api.schemas.schemas import ErrorsResponse, SuccessResponse
 
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
 

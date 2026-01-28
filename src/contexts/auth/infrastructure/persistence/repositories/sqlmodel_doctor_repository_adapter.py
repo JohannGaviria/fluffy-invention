@@ -6,7 +6,7 @@ from sqlmodel import Session
 from src.contexts.auth.domain.entities.entity import DoctorEntity
 from src.contexts.auth.domain.ports.doctor_repository_port import DoctorRepositoryPort
 from src.contexts.auth.infrastructure.persistence.mappers.mapper import DoctorMapper
-from src.shared.domain.exception import (
+from src.shared.domain.exceptions.exception import (
     DatabaseConnectionException,
     UnexpectedDatabaseException,
 )
