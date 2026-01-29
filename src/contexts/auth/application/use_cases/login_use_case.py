@@ -108,7 +108,7 @@ class LoginUseCase:
             raise InvalidCredentialsException()
 
         # Generate access token
-        payload = TokenPayloadVO.generate(user, self.expire_in)
+        payload = TokenPayloadVO.generate(user.id, user.role, self.expire_in)
         token = self.token_service_port.access(payload)
 
         # Reset failed attempts on successful login

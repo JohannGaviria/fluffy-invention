@@ -40,9 +40,6 @@ def get_current_user(
         payload = token_service.decode(token)
         return TokenPayloadVO(
             user_id=payload.user_id,
-            first_name=payload.first_name,
-            last_name=payload.last_name,
-            email=payload.email,
             role=payload.role,
             expires_in=payload.expires_in,
             jti=payload.jti,
