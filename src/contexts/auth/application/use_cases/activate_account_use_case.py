@@ -5,9 +5,11 @@ from src.contexts.auth.domain.exceptions.exception import (
     InvalidActivationCodeException,
     UserNotFoundException,
 )
-from src.contexts.auth.domain.ports.user_repository_port import UserRepositoryPort
+from src.contexts.auth.domain.ports.repositories.user_repository_port import (
+    UserRepositoryPort,
+)
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
-from src.shared.domain.cache_service_port import CacheServicePort
+from src.shared.domain.ports.services.cache_service_port import CacheServicePort
 
 
 class ActivateAccountUseCase:

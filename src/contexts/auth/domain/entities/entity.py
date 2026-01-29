@@ -7,8 +7,8 @@ from uuid import UUID, uuid4
 
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
 from src.contexts.auth.domain.value_objects.password_hash_vo import PasswordHashVO
-from src.shared.domain.entity import BaseEntity
-from src.shared.domain.exception import MissingFieldException
+from src.shared.domain.entities.entity import BaseEntity
+from src.shared.domain.exceptions.exception import MissingFieldException
 
 
 class RolesEnum(str, Enum):

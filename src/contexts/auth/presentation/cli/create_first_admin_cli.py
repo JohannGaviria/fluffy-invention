@@ -11,17 +11,17 @@ from src.contexts.auth.domain.exceptions.exception import (
     AdminUserAlreadyExistsException,
     EmailAlreadyExistsException,
 )
-from src.contexts.auth.infrastructure.external.password_hash_service_adapter import (
-    PasswordHashServiceAdapter,
-)
-from src.contexts.auth.infrastructure.external.password_service_adapter import (
-    PasswordServiceAdapter,
-)
-from src.contexts.auth.infrastructure.external.staff_email_policy_service_adapter import (
-    StaffEmailPolicyServiceAdapter,
-)
 from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_user_repository_adapter import (
     SQLModelRepositoryAdapter,
+)
+from src.contexts.auth.infrastructure.policies.staff_email_policy_service_adapter import (
+    StaffEmailPolicyServiceAdapter,
+)
+from src.contexts.auth.infrastructure.security.password_hash_service_adapter import (
+    PasswordHashServiceAdapter,
+)
+from src.contexts.auth.infrastructure.security.password_service_adapter import (
+    PasswordServiceAdapter,
 )
 from src.shared.infrastructure.db.database import get_session
 from src.shared.infrastructure.logging.logger import get_logger

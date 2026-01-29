@@ -6,11 +6,13 @@ from sqlalchemy.exc import OperationalError, SQLAlchemyError
 from sqlmodel import Session, select
 
 from src.contexts.auth.domain.entities.entity import RolesEnum, UserEntity
-from src.contexts.auth.domain.ports.user_repository_port import UserRepositoryPort
+from src.contexts.auth.domain.ports.repositories.user_repository_port import (
+    UserRepositoryPort,
+)
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
 from src.contexts.auth.infrastructure.persistence.mappers.mapper import UserMapper
 from src.contexts.auth.infrastructure.persistence.models.model import UserModel
-from src.shared.domain.exception import (
+from src.shared.domain.exceptions.exception import (
     DatabaseConnectionException,
     UnexpectedDatabaseException,
 )

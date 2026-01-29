@@ -18,7 +18,7 @@ from src.contexts.auth.domain.exceptions.exception import (
     UserInactiveException,
     UserNotFoundException,
 )
-from src.shared.presentation.api.schemas import ErrorsResponse
+from src.shared.presentation.api.schemas.schemas import ErrorsResponse
 
 
 def register_auth_exceptions_handlers(app: FastAPI) -> None:

@@ -4,7 +4,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from src.shared.domain.sender_notification_service_port import (
+from src.shared.domain.ports.services.sender_notification_service_port import (
     SenderNotificationServicePort,
 )
 from src.shared.infrastructure.logging.logger import Logger

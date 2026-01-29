@@ -4,11 +4,11 @@ from fastapi import FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from src.shared.domain.exception import (
+from src.shared.domain.exceptions.exception import (
     DatabaseConnectionException,
     UnexpectedDatabaseException,
 )
-from src.shared.presentation.api.schemas import ErrorsResponse
+from src.shared.presentation.api.schemas.schemas import ErrorsResponse
 
 
 def register_exceptions_handlers(app: FastAPI) -> None:

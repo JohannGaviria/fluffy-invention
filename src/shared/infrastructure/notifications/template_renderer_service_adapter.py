@@ -2,7 +2,9 @@
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from src.shared.domain.template_renderer_service_port import TemplateRendererServicePort
+from src.shared.domain.ports.services.template_renderer_service_port import (
+    TemplateRendererServicePort,
+)
 
 
 class TemplateRendererServiceAdapter(TemplateRendererServicePort):

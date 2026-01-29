@@ -27,10 +27,8 @@ from src.contexts.auth.domain.exceptions.exception import (
     UserNotFoundException,
 )
 from src.contexts.auth.domain.value_objects.token_payload_vo import TokenPayloadVO
-from src.contexts.auth.presentation.api.dependencies.dependency import (
+from src.contexts.auth.presentation.api.compositions.use_cases_composition import (
     get_activate_account_use_case,
-    get_current_user,
-    get_logger,
     get_login_use_case,
     get_register_user_use_case,
 )
@@ -40,13 +38,17 @@ from src.contexts.auth.presentation.api.schemas.schema import (
     LoginRequest,
     RegisterUserRequest,
 )
-from src.shared.domain.exception import (
+from src.shared.domain.exceptions.exception import (
     DatabaseConnectionException,
     MissingFieldException,
     UnexpectedDatabaseException,
 )
 from src.shared.infrastructure.logging.logger import Logger
-from src.shared.presentation.api.schemas import ErrorsResponse, SuccessResponse
+from src.shared.presentation.api.compositions.security_composition import (
+    get_current_user,
+    get_logger,
+)
+from src.shared.presentation.api.schemas.schemas import ErrorsResponse, SuccessResponse
 
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
 

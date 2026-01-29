@@ -4,7 +4,7 @@ from datetime import UTC, datetime, timedelta
 
 import jwt
 
-from src.contexts.auth.domain.ports.token_service_port import TokenServicePort
+from src.contexts.auth.domain.ports.services.token_service_port import TokenServicePort
 from src.contexts.auth.domain.value_objects.access_token_vo import AccessTokenVO
 from src.contexts.auth.domain.value_objects.token_payload_vo import TokenPayloadVO
 
@@ -58,9 +58,6 @@ class PyJWTTokenServiceAdapter(TokenServicePort):
         payload = jwt.decode(token, self.secret_key, self.algorithm)
         return TokenPayloadVO(
             user_id=payload.get("sub"),
-            first_name=payload.get("first_name"),
-            last_name=payload.get("last_name"),
-            email=payload.get("email"),
             role=payload.get("role"),
             expires_in=payload.get("expires_in"),
             jti=payload.get("jti"),

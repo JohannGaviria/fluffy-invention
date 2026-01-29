@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-from src.shared.domain.value_object import BaseValueObject
+from src.shared.domain.value_objects.value_object import BaseValueObject
 
 
 @dataclass(frozen=True)

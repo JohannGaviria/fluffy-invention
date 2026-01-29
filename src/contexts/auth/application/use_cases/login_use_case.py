@@ -7,15 +7,17 @@ from src.contexts.auth.domain.exceptions.exception import (
     InvalidCredentialsException,
     UserInactiveException,
 )
-from src.contexts.auth.domain.ports.password_hash_service_port import (
+from src.contexts.auth.domain.ports.repositories.user_repository_port import (
+    UserRepositoryPort,
+)
+from src.contexts.auth.domain.ports.services.password_hash_service_port import (
     PasswordHashServicePort,
 )
-from src.contexts.auth.domain.ports.token_service_port import TokenServicePort
-from src.contexts.auth.domain.ports.user_repository_port import UserRepositoryPort
+from src.contexts.auth.domain.ports.services.token_service_port import TokenServicePort
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
 from src.contexts.auth.domain.value_objects.password_vo import PasswordVO
 from src.contexts.auth.domain.value_objects.token_payload_vo import TokenPayloadVO
-from src.shared.domain.cache_service_port import CacheServicePort
+from src.shared.domain.ports.services.cache_service_port import CacheServicePort
 
 
 class LoginUseCase:
@@ -106,7 +108,7 @@ class LoginUseCase:
             raise InvalidCredentialsException()
 
         # Generate access token
-        payload = TokenPayloadVO.generate(user, self.expire_in)
+        payload = TokenPayloadVO.generate(user.id, user.role, self.expire_in)
         token = self.token_service_port.access(payload)
 
         # Reset failed attempts on successful login
