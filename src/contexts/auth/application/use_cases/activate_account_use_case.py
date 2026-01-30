@@ -8,6 +8,12 @@ from src.contexts.auth.domain.exceptions.exception import (
 from src.contexts.auth.domain.ports.repositories.user_repository_port import (
     UserRepositoryPort,
 )
+from src.contexts.auth.domain.value_objects.activation_code_cache_key_vo import (
+    ActivationCodeCacheKeyVO,
+)
+from src.contexts.auth.domain.value_objects.activation_code_cache_value_vo import (
+    ActivationCodeCacheValueVO,
+)
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
 from src.shared.domain.ports.services.cache_service_port import CacheServicePort
 
@@ -18,7 +24,7 @@ class ActivateAccountUseCase:
     def __init__(
         self,
         user_repository_port: UserRepositoryPort,
-        cache_service_port: CacheServicePort,
+        cache_service_port: CacheServicePort[ActivationCodeCacheValueVO],
     ) -> None:
         """Initialize the ActivateAccountUseCase with required ports.
 
@@ -42,13 +48,13 @@ class ActivateAccountUseCase:
             raise UserNotFoundException(email)
 
         # Validate the activation code from cache
-        key = f"cache:auth:activation_code:{str(user.id)}"
-        existing_cache = self.cache_service_port.get(key)
-        if not existing_cache:
+        key = ActivationCodeCacheKeyVO.from_user_id(user.id)
+        cached_value = self.cache_service_port.get(key)
+        if not cached_value:
             raise ActivationCodeExpiredException()
 
         # Check if the activation code matches
-        if not activation_code == existing_cache.get("code"):
+        if not activation_code == cached_value.code:
             raise InvalidActivationCodeException()
 
         # Activate the user account

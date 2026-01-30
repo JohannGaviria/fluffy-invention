@@ -4,6 +4,12 @@ from fastapi import Depends
 from sqlmodel import Session
 
 from src.config import settings
+from src.contexts.auth.domain.value_objects.activation_code_cache_value_vo import (
+    ActivationCodeCacheValueVO,
+)
+from src.contexts.auth.domain.value_objects.login_attempts_cache_value_vo import (
+    LoginAttemptsCacheValueVO,
+)
 from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_doctor_repository_adapter import (
     SQLModelDoctorRepositoryAdapter,
 )
@@ -28,6 +34,10 @@ from src.contexts.auth.infrastructure.security.password_hash_service_adapter imp
 from src.contexts.auth.infrastructure.security.password_service_adapter import (
     PasswordServiceAdapter,
 )
+from src.shared.infrastructure.cache.redis_cache_service_adapter import (
+    RedisCacheServiceAdapter,
+)
+from src.shared.infrastructure.cache.redis_client import RedisClient, get_redis_client
 from src.shared.infrastructure.db.database import get_session
 from src.shared.infrastructure.logging.logger import Logger
 from src.shared.presentation.api.compositions.infrastructure_composition import (
@@ -125,3 +135,35 @@ def get_staff_email_policy_service() -> StaffEmailPolicyServiceAdapter:
     return StaffEmailPolicyServiceAdapter(
         settings.ALLOWED_STAFF_EMAIL_DOMAINS, settings.ALLOWED_STAFF_ROLES
     )
+
+
+def get_activation_code_cache_service(
+    redis_client: RedisClient = Depends(get_redis_client),
+    logger: Logger = Depends(get_logger),
+) -> RedisCacheServiceAdapter[ActivationCodeCacheValueVO]:
+    """Get the Redis cache service adapter for activation codes.
+
+    Args:
+        redis_client (RedisClient): The Redis client instance.
+        logger (Logger): The logger instance.
+
+    Returns:
+        RedisCacheServiceAdapter[ActivationCodeCacheValueVO]: Cache service for activation codes.
+    """
+    return RedisCacheServiceAdapter(redis_client, logger, ActivationCodeCacheValueVO)
+
+
+def get_login_attempts_cache_service(
+    redis_client: RedisClient = Depends(get_redis_client),
+    logger: Logger = Depends(get_logger),
+) -> RedisCacheServiceAdapter[LoginAttemptsCacheValueVO]:
+    """Get the Redis cache service adapter for login attempts.
+
+    Args:
+        redis_client (RedisClient): The Redis client instance.
+        logger (Logger): The logger instance.
+
+    Returns:
+        RedisCacheServiceAdapter[LoginAttemptsCacheValueVO]: Cache service for login attempts.
+    """
+    return RedisCacheServiceAdapter(redis_client, logger, LoginAttemptsCacheValueVO)
