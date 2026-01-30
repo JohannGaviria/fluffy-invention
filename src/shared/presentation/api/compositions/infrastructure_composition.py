@@ -6,10 +6,6 @@ from src.config import settings
 from src.contexts.auth.infrastructure.security.token_service_adapter import (
     PyJWTTokenServiceAdapter,
 )
-from src.shared.infrastructure.cache.redis_cache_service_adapter import (
-    RedisCacheServiceAdapter,
-)
-from src.shared.infrastructure.cache.redis_client import RedisClient, get_redis_client
 from src.shared.infrastructure.logging.logger import Logger
 from src.shared.infrastructure.notifications.sender_notification_service_adapter import (
     SenderNotificationServiceAdapter,
@@ -26,22 +22,6 @@ def get_logger() -> Logger:
         Logger: An instance of Logger.
     """
     return Logger(settings.LOG_LEVEL)
-
-
-def get_cache_service(
-    redis_client: RedisClient = Depends(get_redis_client),
-    logger: Logger = Depends(get_logger),
-) -> RedisCacheServiceAdapter:
-    """Get the Redis cache service adapter.
-
-    Args:
-        redis_client (RedisClient): The Redis client instance.
-        logger (Logger): The logger instance.
-
-    Returns:
-        RedisCacheServiceAdapter: An instance of RedisCacheServiceAdapter.
-    """
-    return RedisCacheServiceAdapter(redis_client, logger)
 
 
 def get_template_renderer_service() -> TemplateRendererServiceAdapter:

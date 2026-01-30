@@ -40,6 +40,12 @@ from src.contexts.auth.domain.ports.services.password_service_port import (
 from src.contexts.auth.domain.ports.services.staff_email_policy_service_port import (
     StaffEmailPolicyServicePort,
 )
+from src.contexts.auth.domain.value_objects.activation_code_cache_key_vo import (
+    ActivationCodeCacheKeyVO,
+)
+from src.contexts.auth.domain.value_objects.activation_code_cache_value_vo import (
+    ActivationCodeCacheValueVO,
+)
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
 from src.shared.domain.exceptions.exception import MissingFieldException
 from src.shared.domain.ports.services.cache_service_port import CacheServicePort
@@ -49,6 +55,8 @@ from src.shared.domain.ports.services.sender_notification_service_port import (
 from src.shared.domain.ports.services.template_renderer_service_port import (
     TemplateRendererServicePort,
 )
+from src.shared.domain.value_objects.cache_entry_vo import CacheEntryVO
+from src.shared.domain.value_objects.cache_ttl_vo import CacheTTLVO
 
 
 class RegisterUserUseCase:
@@ -62,7 +70,7 @@ class RegisterUserUseCase:
         password_service_port: PasswordServicePort,
         password_hash_service_port: PasswordHashServicePort,
         activation_code_service_port: ActivationCodeServicePort,
-        cache_service_port: CacheServicePort,
+        cache_service_port: CacheServicePort[ActivationCodeCacheValueVO],
         staff_email_policy_service_port: StaffEmailPolicyServicePort,
         authorization_policy_service_port: AuthorizationPolicyServicePort,
         template_renderer_service_port: TemplateRendererServicePort,
@@ -166,23 +174,24 @@ class RegisterUserUseCase:
             )
             self.doctor_repository_port.save(doctor_entity)
 
-        # Generate activation code and cache it
-        key = f"cache:auth:activation_code:{str(user.id)}"
+        #
         activation_code = self.activation_code_service_port.generate()
-        ttl = 15 * 60
-        payload = {
-            "user_id": str(user.id),
-            "email": str(user.email),
-            "code": activation_code,
-        }
-        self.cache_service_port.set(key, ttl, payload)
+
+        #
+        key = ActivationCodeCacheKeyVO.from_user_id(user.id)
+        ttl = CacheTTLVO.from_minutes(45)
+        value = ActivationCodeCacheValueVO(user.id, user.email, activation_code)
+        entry = CacheEntryVO(key, ttl, value)
+
+        #
+        self.cache_service_port.set(entry)
 
         context = {
             "first_name": user.first_name,
             "last_name": user.last_name,
             "temporary_password": temporary_password,
             "activation_code": activation_code,
-            "expiration_minutes": ttl // 60,
+            "expiration_minutes": ttl,
         }
         message = self.template_renderer_service_port.render(
             "auth_activation_code.html", context

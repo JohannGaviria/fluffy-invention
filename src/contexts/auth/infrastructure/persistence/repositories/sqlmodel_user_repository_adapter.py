@@ -78,8 +78,8 @@ class SQLModelRepositoryAdapter(UserRepositoryPort):
             raise DatabaseConnectionException("Could not connect to database.") from e
         except SQLAlchemyError as e:
             self.session.rollback()
-            self.logger.error(message="Unexpected database error.", error=str(e))
-            raise UnexpectedDatabaseException("Unexpected database error.") from e
+            self.logger.error(message="Unexpected database error.,", error=str(e))
+            raise UnexpectedDatabaseException("Unexpected database error.,") from e
 
     def status_update(self, status: bool, user_id: UUID) -> None:
         """Update the active status of a user.

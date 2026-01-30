@@ -38,9 +38,11 @@ from src.contexts.auth.infrastructure.security.token_service_adapter import (
     PyJWTTokenServiceAdapter,
 )
 from src.contexts.auth.presentation.api.compositions.infrastructure_composition import (
+    get_activation_code_cache_service,
     get_activation_code_service,
     get_authorization_policy_service,
     get_doctor_repository,
+    get_login_attempts_cache_service,
     get_password_hash_service,
     get_password_service,
     get_patient_repository,
@@ -57,7 +59,6 @@ from src.shared.infrastructure.notifications.template_renderer_service_adapter i
     TemplateRendererServiceAdapter,
 )
 from src.shared.presentation.api.compositions.infrastructure_composition import (
-    get_cache_service,
     get_sender_notification_service,
     get_template_renderer_service,
     get_token_service,
@@ -77,7 +78,9 @@ def get_register_user_use_case(
     activation_code_service: ActivationCodeServiceAdapter = Depends(
         get_activation_code_service
     ),
-    cache_service: RedisCacheServiceAdapter = Depends(get_cache_service),
+    cache_service: RedisCacheServiceAdapter = Depends(
+        get_activation_code_cache_service
+    ),
     staff_email_policy_service: StaffEmailPolicyServiceAdapter = Depends(
         get_staff_email_policy_service
     ),
@@ -126,7 +129,9 @@ def get_register_user_use_case(
 
 def get_activate_account_use_case(
     user_repository: SQLModelRepositoryAdapter = Depends(get_user_repository),
-    cache_service: RedisCacheServiceAdapter = Depends(get_cache_service),
+    cache_service: RedisCacheServiceAdapter = Depends(
+        get_activation_code_cache_service
+    ),
 ) -> ActivateAccountUseCase:
     """Get the ActivateAccountUseCase instance.
 
@@ -146,7 +151,7 @@ def get_login_use_case(
         get_password_hash_service
     ),
     token_service: PyJWTTokenServiceAdapter = Depends(get_token_service),
-    cache_service: RedisCacheServiceAdapter = Depends(get_cache_service),
+    cache_service: RedisCacheServiceAdapter = Depends(get_login_attempts_cache_service),
 ) -> LoginUseCase:
     """Get the LoginUseCase instance.
 
