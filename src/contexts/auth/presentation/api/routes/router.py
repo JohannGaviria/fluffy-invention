@@ -15,6 +15,8 @@ from src.contexts.auth.domain.entities.entity import RolesEnum
 from src.contexts.auth.domain.exceptions.exception import (
     AccountTemporarilyBlockedException,
     ActivationCodeExpiredException,
+    DoctorLicenseNumberAlreadyRegisteredException,
+    DoctorProfileAlreadyExistsException,
     EmailAlreadyExistsException,
     InvalidActivationCodeException,
     InvalidCorporateEmailException,
@@ -22,6 +24,9 @@ from src.contexts.auth.domain.exceptions.exception import (
     InvalidEmailException,
     InvalidPasswordException,
     InvalidPasswordHashException,
+    PatientDocumentAlreadyRegisteredException,
+    PatientPhoneAlreadyRegisteredException,
+    PatientProfileAlreadyExistsException,
     UnauthorizedUserRegistrationException,
     UserInactiveException,
     UserNotFoundException,
@@ -105,6 +110,11 @@ async def register_user(
         InvalidEmailException: If the email format is invalid.
         InvalidPasswordException: If the password does not meet criteria.
         InvalidPasswordHashException: If there is an error hashing the password.
+        PatientDocumentAlreadyRegisteredException: If the patient document is already registered.
+        PatientPhoneAlreadyRegisteredException: If the patient phone number is already registered.
+        PatientProfileAlreadyExistsException: If the patient profile already exists.
+        DoctorLicenseNumberAlreadyRegisteredException: If the doctor license number is already registered.
+        DoctorProfileAlreadyExistsException: If the doctor profile already exists.
         UnauthorizedUserRegistrationException: If the user is not authorized to register.
         MissingFieldException: If required fields are missing in the request.
         DatabaseConnectionException: If there is a database connection error.
@@ -125,6 +135,11 @@ async def register_user(
         InvalidEmailException,
         InvalidPasswordException,
         InvalidPasswordHashException,
+        PatientDocumentAlreadyRegisteredException,
+        PatientPhoneAlreadyRegisteredException,
+        PatientProfileAlreadyExistsException,
+        DoctorLicenseNumberAlreadyRegisteredException,
+        DoctorProfileAlreadyExistsException,
     ) as e:
         logger.warning("Registration error", error=str(e))
         raise

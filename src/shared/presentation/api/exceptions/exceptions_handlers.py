@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 
 from src.shared.domain.exceptions.exception import (
     DatabaseConnectionException,
+    MissingFieldException,
     UnexpectedDatabaseException,
 )
 from src.shared.presentation.api.schemas.schemas import ErrorsResponse
@@ -56,6 +57,26 @@ def register_exceptions_handlers(app: FastAPI) -> None:
                 ErrorsResponse(message="Unexpected database error", details=[str(exc)])
             ),
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    @app.exception_handler(MissingFieldException)
+    async def missing_field_exception_handler(
+        request: Request, exc: MissingFieldException
+    ) -> JSONResponse:
+        """Handle MissingFieldException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (MissingFieldException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            jsonable_encoder(
+                ErrorsResponse(message="Missing required field", details=[str(exc)])
+            ),
+            status_code=status.HTTP_400_BAD_REQUEST,
         )
 
     @app.exception_handler(Exception)

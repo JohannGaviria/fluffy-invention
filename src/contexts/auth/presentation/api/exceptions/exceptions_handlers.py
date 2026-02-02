@@ -7,6 +7,8 @@ from fastapi.responses import JSONResponse
 from src.contexts.auth.domain.exceptions.exception import (
     AccountTemporarilyBlockedException,
     ActivationCodeExpiredException,
+    DoctorLicenseNumberAlreadyRegisteredException,
+    DoctorProfileAlreadyExistsException,
     EmailAlreadyExistsException,
     InvalidActivationCodeException,
     InvalidCorporateEmailException,
@@ -14,6 +16,9 @@ from src.contexts.auth.domain.exceptions.exception import (
     InvalidEmailException,
     InvalidPasswordException,
     InvalidPasswordHashException,
+    PatientDocumentAlreadyRegisteredException,
+    PatientPhoneAlreadyRegisteredException,
+    PatientProfileAlreadyExistsException,
     UnauthorizedUserRegistrationException,
     UserInactiveException,
     UserNotFoundException,
@@ -298,4 +303,119 @@ def register_auth_exceptions_handlers(app: FastAPI) -> None:
                 )
             ),
             status_code=status.HTTP_403_FORBIDDEN,
+        )
+
+    @app.exception_handler(PatientDocumentAlreadyRegisteredException)
+    async def patient_document_already_registered_exception_handler(
+        request: Request, exc: PatientDocumentAlreadyRegisteredException
+    ) -> JSONResponse:
+        """Handle PatientDocumentAlreadyRegisteredException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (PatientDocumentAlreadyRegisteredException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="Patient document already registered",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+    @app.exception_handler(PatientPhoneAlreadyRegisteredException)
+    async def patient_phone_already_registered_exception_handler(
+        request: Request, exc: PatientPhoneAlreadyRegisteredException
+    ) -> JSONResponse:
+        """Handle PatientPhoneAlreadyRegisteredException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (PatientPhoneAlreadyRegisteredException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="Patient phone number already registered",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+    @app.exception_handler(PatientProfileAlreadyExistsException)
+    async def patient_profile_already_exists_exception_handler(
+        request: Request, exc: PatientProfileAlreadyExistsException
+    ) -> JSONResponse:
+        """Handle PatientProfileAlreadyExistsException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (PatientProfileAlreadyExistsException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="Patient profile already exists",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+    @app.exception_handler(DoctorLicenseNumberAlreadyRegisteredException)
+    async def doctor_license_number_already_registered_exception_handler(
+        request: Request, exc: DoctorLicenseNumberAlreadyRegisteredException
+    ) -> JSONResponse:
+        """Handle DoctorLicenseNumberAlreadyRegisteredException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (DoctorLicenseNumberAlreadyRegisteredException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="Doctor license number already registered",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+    @app.exception_handler(DoctorProfileAlreadyExistsException)
+    async def doctor_profile_already_exists_exception_handler(
+        request: Request, exc: DoctorProfileAlreadyExistsException
+    ) -> JSONResponse:
+        """Handle DoctorProfileAlreadyExistsException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (DoctorProfileAlreadyExistsException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="Doctor profile already exists",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_409_CONFLICT,
         )

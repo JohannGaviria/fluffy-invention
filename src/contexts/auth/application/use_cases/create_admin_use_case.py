@@ -45,7 +45,9 @@ class CreateAdminUseCase:
         password_hash_service_port: PasswordHashServicePort,
         password_service_port: PasswordServicePort,
         sender_notification_service_port: SenderNotificationServicePort,
-        template_renderer_service_port: TemplateRendererServicePort,
+        template_renderer_service_port: TemplateRendererServicePort[
+            TemplateContextCreateAdminVO
+        ],
         staff_email_policy_service_port: StaffEmailPolicyServicePort,
     ) -> None:
         """Initialize the CreateAdminUseCase with required ports.
@@ -55,7 +57,7 @@ class CreateAdminUseCase:
             password_hash_service_port (PasswordHashServicePort): Port for password hashing.
             password_service_port (PasswordServicePort): Port for password generation.
             sender_notification_service_port (SenderNotificationServicePort): Port for sending notifications.
-            template_renderer_service_port (TemplateRendererServicePort): Port for rendering templates.
+            template_renderer_service_port (TemplateRendererServicePort[TemplateContextCreateAdminVO]): Port for rendering templates.
             staff_email_policy_service_port (StaffEmailPolicyServicePort): Port for staff email policy checks
         """
         self.user_repository_port = user_repository_port
