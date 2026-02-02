@@ -11,6 +11,9 @@ from src.contexts.auth.domain.exceptions.exception import (
     AdminUserAlreadyExistsException,
     EmailAlreadyExistsException,
 )
+from src.contexts.auth.domain.value_objects.template_context_create_admin_vo import (
+    TemplateContextCreateAdminVO,
+)
 from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_user_repository_adapter import (
     SQLModelRepositoryAdapter,
 )
@@ -53,7 +56,9 @@ def create_initial_admin() -> None:
         settings.USER_PASSWORD,
         logger,
     )
-    template_renderer_service = TemplateRendererServiceAdapter(settings.TEMPLATE_PATH)
+    template_renderer_service = TemplateRendererServiceAdapter(
+        settings.TEMPLATE_PATH, TemplateContextCreateAdminVO
+    )
     staff_email_policy_service = StaffEmailPolicyServiceAdapter(
         settings.ALLOWED_STAFF_EMAIL_DOMAINS, settings.ALLOWED_STAFF_ROLES
     )

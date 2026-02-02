@@ -10,9 +10,6 @@ from src.shared.infrastructure.logging.logger import Logger
 from src.shared.infrastructure.notifications.sender_notification_service_adapter import (
     SenderNotificationServiceAdapter,
 )
-from src.shared.infrastructure.notifications.template_renderer_service_adapter import (
-    TemplateRendererServiceAdapter,
-)
 
 
 def get_logger() -> Logger:
@@ -24,13 +21,13 @@ def get_logger() -> Logger:
     return Logger(settings.LOG_LEVEL)
 
 
-def get_template_renderer_service() -> TemplateRendererServiceAdapter:
-    """Get the template renderer service adapter.
+# def get_template_renderer_service() -> TemplateRendererServiceAdapter:
+#     """Get the template renderer service adapter.
 
-    Returns:
-        TemplateRendererServiceAdapter: An instance of TemplateRendererServiceAdapter.
-    """
-    return TemplateRendererServiceAdapter(settings.TEMPLATE_PATH)
+#     Returns:
+#         TemplateRendererServiceAdapter: An instance of TemplateRendererServiceAdapter.
+#     """
+#     return TemplateRendererServiceAdapter(settings.TEMPLATE_PATH)
 
 
 def get_sender_notification_service(

@@ -47,6 +47,12 @@ from src.contexts.auth.domain.value_objects.activation_code_cache_value_vo impor
     ActivationCodeCacheValueVO,
 )
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
+from src.contexts.auth.domain.value_objects.template_context_activate_account_vo import (
+    TemplateContextActivateAccountVO,
+)
+from src.contexts.auth.domain.value_objects.template_name_account_activate_vo import (
+    TemplateNameAccountActivateVO,
+)
 from src.shared.domain.exceptions.exception import MissingFieldException
 from src.shared.domain.ports.services.cache_service_port import CacheServicePort
 from src.shared.domain.ports.services.sender_notification_service_port import (
@@ -57,6 +63,8 @@ from src.shared.domain.ports.services.template_renderer_service_port import (
 )
 from src.shared.domain.value_objects.cache_entry_vo import CacheEntryVO
 from src.shared.domain.value_objects.cache_ttl_vo import CacheTTLVO
+from src.shared.domain.value_objects.send_notification_vo import SendNotificationVO
+from src.shared.domain.value_objects.template_renderer_vo import TemplateRendererVO
 
 
 class RegisterUserUseCase:
@@ -145,6 +153,7 @@ class RegisterUserUseCase:
         )
         user = self.user_repository_port.save(entity)
 
+        # If the role is patient, create and save the patient profile
         if command.role == "patient":
             if not isinstance(command.profile, PatientProfileCommand):
                 raise MissingFieldException(
@@ -158,6 +167,7 @@ class RegisterUserUseCase:
             )
             self.patient_repository_port.save(patient_entity)
 
+        # If the role is doctor, create and save the doctor profile
         if command.role == "doctor":
             if not isinstance(command.profile, DoctorProfileCommand):
                 raise MissingFieldException(
@@ -174,28 +184,34 @@ class RegisterUserUseCase:
             )
             self.doctor_repository_port.save(doctor_entity)
 
-        #
+        # Generate activation code and cache it
         activation_code = self.activation_code_service_port.generate()
 
-        #
+        # Create cache entry
         key = ActivationCodeCacheKeyVO.from_user_id(user.id)
         ttl = CacheTTLVO.from_minutes(45)
         value = ActivationCodeCacheValueVO(user.id, user.email, activation_code)
         entry = CacheEntryVO(key, ttl, value)
 
-        #
+        # Store activation code in cache
         self.cache_service_port.set(entry)
 
-        context = {
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "temporary_password": temporary_password,
-            "activation_code": activation_code,
-            "expiration_minutes": ttl,
-        }
-        message = self.template_renderer_service_port.render(
-            "auth_activation_code.html", context
+        # Send activation email to the new user
+        template_name = TemplateNameAccountActivateVO.create()
+        context = TemplateContextActivateAccountVO(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            temporary_password=temporary_password.value,
+            activation_code=activation_code,
+            expiration_minutes=ttl.to_minutes(),
         )
-        self.sender_notification_service_port.send(
-            user.email.value, "Activate your account", message
+
+        # Render email template
+        template_renderer = TemplateRendererVO(template_name, context)
+        message = self.template_renderer_service_port.render(template_renderer)
+
+        # Send notification
+        notification = SendNotificationVO(
+            recipient=user.email.value, subject="Activate your account", body=message
         )
+        self.sender_notification_service_port.send(notification)

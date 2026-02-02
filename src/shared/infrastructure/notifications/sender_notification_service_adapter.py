@@ -7,6 +7,7 @@ from email.mime.text import MIMEText
 from src.shared.domain.ports.services.sender_notification_service_port import (
     SenderNotificationServicePort,
 )
+from src.shared.domain.value_objects.send_notification_vo import SendNotificationVO
 from src.shared.infrastructure.logging.logger import Logger
 
 
@@ -36,30 +37,30 @@ class SenderNotificationServiceAdapter(SenderNotificationServicePort):
         self.user_password = user_password
         self.logger = logger
 
-    def send(self, recipient: str, subject: str, body: str) -> None:
+    def send(self, notification: SendNotificationVO) -> None:
         """Sends an email notification.
 
         Args:
-            recipient (str): The recipient email address.
-            subject (str): The subject of the email.
-            body (str): The body of the email in HTML format.
+            notification (SendNotificationVO): The notification to be sent.
 
         Raises:
             Exception: If sending the email fails.
         """
         message = MIMEMultipart()
         message["From"] = self.user_email
-        message["To"] = recipient
-        message["Subject"] = subject
+        message["To"] = notification.recipient
+        message["Subject"] = notification.subject
 
-        html = MIMEText(body, "html")
+        html = MIMEText(notification.body, "html")
         message.attach(html)
 
         try:
             server = smtplib.SMTP(self.smtp_server, self.smtp_port)
             server.starttls()
             server.login(self.user_email, self.user_password)
-            server.sendmail(self.user_email, recipient, message.as_string())
+            server.sendmail(
+                self.user_email, notification.recipient, message.as_string()
+            )
             server.quit()
             self.logger.info("Notification sent successfully.")
         except Exception as e:

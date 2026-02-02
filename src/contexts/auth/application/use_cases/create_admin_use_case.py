@@ -20,12 +20,20 @@ from src.contexts.auth.domain.ports.services.staff_email_policy_service_port imp
     StaffEmailPolicyServicePort,
 )
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
+from src.contexts.auth.domain.value_objects.template_context_create_admin_vo import (
+    TemplateContextCreateAdminVO,
+)
+from src.contexts.auth.domain.value_objects.template_name_create_admin_vo import (
+    TemplateNameCreateAdminVO,
+)
 from src.shared.domain.ports.services.sender_notification_service_port import (
     SenderNotificationServicePort,
 )
 from src.shared.domain.ports.services.template_renderer_service_port import (
     TemplateRendererServicePort,
 )
+from src.shared.domain.value_objects.send_notification_vo import SendNotificationVO
+from src.shared.domain.value_objects.template_renderer_vo import TemplateRendererVO
 
 
 class CreateAdminUseCase:
@@ -98,16 +106,23 @@ class CreateAdminUseCase:
         entity.is_active = True
         user = self.user_repository_port.save(entity)
 
-        # Send notification email to the new admin user
-        context = {
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": str(user.email),
-            "temporary_password": temporary_password,
-        }
-        message = self.template_renderer_service_port.render(
-            "auth_create_first_admin.html", context
+        # Send notification with account details
+        template_name = TemplateNameCreateAdminVO.create()
+        context = TemplateContextCreateAdminVO(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            email=user.email.value,
+            temporary_password=temporary_password.value,
         )
-        self.sender_notification_service_port.send(
-            user.email.value, "Your Admin Account Has Been Created", message
+
+        # Render template and send notification
+        template_renderer = TemplateRendererVO(template_name, context)
+        message = self.template_renderer_service_port.render(template_renderer)
+
+        # Send notification
+        notification = SendNotificationVO(
+            recipient=user.email.value,
+            subject="Your Admin Account Has Been Created",
+            body=message,
         )
+        self.sender_notification_service_port.send(notification)

@@ -10,6 +10,9 @@ from src.contexts.auth.domain.value_objects.activation_code_cache_value_vo impor
 from src.contexts.auth.domain.value_objects.login_attempts_cache_value_vo import (
     LoginAttemptsCacheValueVO,
 )
+from src.contexts.auth.domain.value_objects.template_context_activate_account_vo import (
+    TemplateContextActivateAccountVO,
+)
 from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_doctor_repository_adapter import (
     SQLModelDoctorRepositoryAdapter,
 )
@@ -40,6 +43,9 @@ from src.shared.infrastructure.cache.redis_cache_service_adapter import (
 from src.shared.infrastructure.cache.redis_client import RedisClient, get_redis_client
 from src.shared.infrastructure.db.database import get_session
 from src.shared.infrastructure.logging.logger import Logger
+from src.shared.infrastructure.notifications.template_renderer_service_adapter import (
+    TemplateRendererServiceAdapter,
+)
 from src.shared.presentation.api.compositions.infrastructure_composition import (
     get_logger,
 )
@@ -167,3 +173,16 @@ def get_login_attempts_cache_service(
         RedisCacheServiceAdapter[LoginAttemptsCacheValueVO]: Cache service for login attempts.
     """
     return RedisCacheServiceAdapter(redis_client, logger, LoginAttemptsCacheValueVO)
+
+
+def get_template_renderer_activate_account_service_service() -> (
+    TemplateRendererServiceAdapter[TemplateContextActivateAccountVO]
+):
+    """Get the template renderer service adapter for account activation emails.
+
+    Returns:
+        TemplateRendererServiceAdapter[TemplateContextActivateAccountVO]: Template renderer for activation emails.
+    """
+    return TemplateRendererServiceAdapter(
+        settings.TEMPLATE_PATH, TemplateContextActivateAccountVO
+    )
