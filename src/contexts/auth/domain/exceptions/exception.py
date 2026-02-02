@@ -155,3 +155,43 @@ class AdminUserAlreadyExistsException(BaseDomainException):
     def __init__(self) -> None:
         """Initialize the AdminUserAlreadyExistsException."""
         super().__init__("An admin user already exists in the system")
+
+
+class PatientProfileAlreadyExistsException(BaseDomainException):
+    """Exception raised when a patient profile already exists for a user."""
+
+    def __init__(self) -> None:
+        """Initialize the PatientProfileAlreadyExistsException."""
+        super().__init__("A patient profile already exists for this user")
+
+
+class PatientDocumentAlreadyRegisteredException(BaseDomainException):
+    """Exception raised when a patient document is already registered in the system."""
+
+    def __init__(self) -> None:
+        """Initialize the PatientDocumentAlreadyRegisteredException."""
+        super().__init__("Patient document already registered")
+
+
+class PatientPhoneAlreadyRegisteredException(BaseDomainException):
+    """Exception raised when a patient phone number is already registered in the system."""
+
+    def __init__(self) -> None:
+        """Initialize the PatientPhoneAlreadyRegisteredException."""
+        super().__init__("Patient phone number already registered")
+
+
+class DoctorProfileAlreadyExistsException(BaseDomainException):
+    """Exception raised when a doctor profile already exists for a user."""
+
+    def __init__(self) -> None:
+        """Initialize the DoctorProfileAlreadyExistsException."""
+        super().__init__("A doctor profile already exists for this user")
+
+
+class DoctorLicenseNumberAlreadyRegisteredException(BaseDomainException):
+    """Exception raised when a doctor license number is already registered in the system."""
+
+    def __init__(self) -> None:
+        """Initialize the DoctorLicenseNumberAlreadyRegisteredException."""
+        super().__init__("Doctor license number already registered")

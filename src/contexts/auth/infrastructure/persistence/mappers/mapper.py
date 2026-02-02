@@ -67,6 +67,26 @@ class PatientMapper:
     """Mapper class for converting between PatientModel and PatientEntity."""
 
     @staticmethod
+    def to_entity(model: PatientModel) -> PatientEntity:
+        """Maps PatientModel to PatientEntity.
+
+        Args:
+            model (PatientModel): The Patient model instance.
+
+        Returns:
+            PatientEntity: The mapped Patient entity instance.
+        """
+        return PatientEntity(
+            id=model.id,
+            user_id=model.user_id,
+            document=model.document,
+            phone=model.phone,
+            birth_date=model.birth_date,
+            created_at=model.created_at,
+            updated_at=model.updated_at,
+        )
+
+    @staticmethod
     def to_model(entity: PatientEntity) -> PatientModel:
         """Maps PatientEntity to PatientModel.
 
@@ -89,6 +109,29 @@ class PatientMapper:
 
 class DoctorMapper:
     """Mapper class for converting between DoctorModel and DoctorEntity."""
+
+    @staticmethod
+    def to_entity(model: DoctorModel) -> DoctorEntity:
+        """Maps DoctorModel to DoctorEntity.
+
+        Args:
+            model (DoctorModel): The Doctor model instance.
+
+        Returns:
+            DoctorEntity: The mapped Doctor entity instance.
+        """
+        return DoctorEntity(
+            id=model.id,
+            user_id=model.user_id,
+            specialty_id=model.specialty_id,
+            license_number=model.license_number,
+            experience_years=model.experience_years,
+            qualifications=model.qualifications,
+            bio=model.bio,
+            is_active=model.is_active,
+            created_at=model.created_at,
+            updated_at=model.updated_at,
+        )
 
     @staticmethod
     def to_model(entity: DoctorEntity) -> DoctorModel:

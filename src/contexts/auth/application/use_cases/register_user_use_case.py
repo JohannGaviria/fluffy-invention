@@ -12,8 +12,13 @@ from src.contexts.auth.domain.entities.entity import (
     UserEntity,
 )
 from src.contexts.auth.domain.exceptions.exception import (
+    DoctorLicenseNumberAlreadyRegisteredException,
+    DoctorProfileAlreadyExistsException,
     EmailAlreadyExistsException,
     InvalidCorporateEmailException,
+    PatientDocumentAlreadyRegisteredException,
+    PatientPhoneAlreadyRegisteredException,
+    PatientProfileAlreadyExistsException,
     UnauthorizedUserRegistrationException,
 )
 from src.contexts.auth.domain.ports.repositories.doctor_repository_port import (
@@ -81,7 +86,9 @@ class RegisterUserUseCase:
         cache_service_port: CacheServicePort[ActivationCodeCacheValueVO],
         staff_email_policy_service_port: StaffEmailPolicyServicePort,
         authorization_policy_service_port: AuthorizationPolicyServicePort,
-        template_renderer_service_port: TemplateRendererServicePort,
+        template_renderer_service_port: TemplateRendererServicePort[
+            TemplateContextActivateAccountVO
+        ],
         sender_notification_service_port: SenderNotificationServicePort,
     ) -> None:
         """Initialize the RegisterUserUseCase with required ports.
@@ -96,7 +103,7 @@ class RegisterUserUseCase:
             cache_service_port (CacheServicePort): Port for caching services.
             staff_email_policy_service_port (StaffEmailPolicyServicePort): Port for staff email policy checks.
             authorization_policy_service_port (AuthorizationPolicyServicePort): Port for authorization policy checks.
-            template_renderer_service_port (TemplateRendererServicePort): Port for rendering templates.
+            template_renderer_service_port (TemplateRendererServicePort[TemplateContextActivateAccountVO]): Port for rendering templates.
             sender_notification_service_port (SenderNotificationServicePort): Port for sending notifications.
         """
         self.user_repository_port = user_repository_port
@@ -159,6 +166,27 @@ class RegisterUserUseCase:
                 raise MissingFieldException(
                     "profile", "Patient profile is required for patient role"
                 )
+
+            # Check for existing patient profile, document, and phone
+            existing_patient_profile = self.patient_repository_port.find_by_user_id(
+                user.id
+            )
+            if existing_patient_profile:
+                raise PatientProfileAlreadyExistsException()
+
+            existing_patient_document = self.patient_repository_port.find_by_document(
+                command.profile.document
+            )
+            if existing_patient_document:
+                raise PatientDocumentAlreadyRegisteredException()
+
+            existing_patient_phone = self.patient_repository_port.find_by_phone(
+                command.profile.phone
+            )
+            if existing_patient_phone:
+                raise PatientPhoneAlreadyRegisteredException()
+
+            # Create and save patient entity
             patient_entity = PatientEntity.create(
                 user_id=user.id,
                 document=command.profile.document,
@@ -174,6 +202,21 @@ class RegisterUserUseCase:
                     "profile", "Doctor profile is required for doctor role"
                 )
 
+            existing_doctor_profile = self.doctor_repository_port.find_by_user_id(
+                user.id
+            )
+            if existing_doctor_profile:
+                raise DoctorProfileAlreadyExistsException()
+
+            existing_doctor_license_number = (
+                self.doctor_repository_port.find_by_license_number(
+                    command.profile.license_number
+                )
+            )
+            if existing_doctor_license_number:
+                raise DoctorLicenseNumberAlreadyRegisteredException()
+
+            # Create and save doctor entity
             doctor_entity = DoctorEntity.create(
                 user_id=user.id,
                 license_number=command.profile.license_number,
