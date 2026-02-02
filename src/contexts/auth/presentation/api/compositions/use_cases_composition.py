@@ -47,6 +47,7 @@ from src.contexts.auth.presentation.api.compositions.infrastructure_composition 
     get_password_service,
     get_patient_repository,
     get_staff_email_policy_service,
+    get_template_renderer_activate_account_service_service,
     get_user_repository,
 )
 from src.shared.infrastructure.cache.redis_cache_service_adapter import (
@@ -60,7 +61,6 @@ from src.shared.infrastructure.notifications.template_renderer_service_adapter i
 )
 from src.shared.presentation.api.compositions.infrastructure_composition import (
     get_sender_notification_service,
-    get_template_renderer_service,
     get_token_service,
 )
 
@@ -88,7 +88,7 @@ def get_register_user_use_case(
         get_authorization_policy_service
     ),
     template_renderer_service: TemplateRendererServiceAdapter = Depends(
-        get_template_renderer_service
+        get_template_renderer_activate_account_service_service
     ),
     sender_notification_service: SenderNotificationServiceAdapter = Depends(
         get_sender_notification_service

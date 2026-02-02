@@ -34,3 +34,11 @@ class CacheTTLVO(BaseValueObject):
             CacheTTLVO: Instance with TTL set in seconds.
         """
         return cls(seconds=minutes * 60)
+
+    def to_minutes(self) -> int:
+        """Convert TTL from seconds to minutes.
+
+        Returns:
+            int: Time to live in minutes.
+        """
+        return self.seconds // 60
