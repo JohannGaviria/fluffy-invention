@@ -17,5 +17,5 @@ class TemplateNameVO(BaseValueObject):
         Raises:
             ValueError: If the name is empty or whitespace.
         """
-        if not self.name:
+        if not self.name or not self.name.strip():
             raise ValueError("Template name cannot be empty or whitespace")

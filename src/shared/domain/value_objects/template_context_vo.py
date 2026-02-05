@@ -10,7 +10,7 @@ class TemplateContextVO(BaseValueObject):
     """Value object for template rendering context."""
 
     @abstractmethod
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:  # pragma: no cover
         """Convert context to dictionary.
 
         Returns:
@@ -20,7 +20,7 @@ class TemplateContextVO(BaseValueObject):
 
     @classmethod
     @abstractmethod
-    def from_dict(cls, data: dict[str, Any]) -> Self:
+    def from_dict(cls, data: dict[str, Any]) -> Self:  # pragma: no cover
         """Create context from dictionary.
 
         Args:
@@ -31,6 +31,6 @@ class TemplateContextVO(BaseValueObject):
         """
         pass
 
-    def validate(self) -> None:
+    def validate(self) -> None:  # pragma: no cover
         """Base validation - override in subclasses."""
         pass
