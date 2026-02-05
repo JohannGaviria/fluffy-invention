@@ -10,7 +10,7 @@ class CacheValueVO(BaseValueObject):
     """Base class for cache values."""
 
     @abstractmethod
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:  # pragma: no cover
         """Convert to dictionary for serialization.
 
         Returns:
@@ -20,7 +20,7 @@ class CacheValueVO(BaseValueObject):
 
     @classmethod
     @abstractmethod
-    def from_dict(cls, data: dict[str, Any]) -> Self:
+    def from_dict(cls, data: dict[str, Any]) -> Self:  # pragma: no cover
         """Create instance from dictionary.
 
         Args:
@@ -31,6 +31,6 @@ class CacheValueVO(BaseValueObject):
         """
         pass
 
-    def validate(self) -> None:
+    def validate(self) -> None:  # pragma: no cover
         """Base validation - override in subclasses."""
         pass

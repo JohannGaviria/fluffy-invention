@@ -19,11 +19,11 @@ class SendNotificationVO(BaseValueObject):
         Raises:
             ValueError: If any of the fields are empty.
         """
-        if not self.recipient and not self.recipient.strip():
+        if not self.recipient or not self.recipient.strip():
             raise ValueError("Recipient cannot be empty.")
 
-        if not self.subject and not self.subject.strip():
+        if not self.subject or not self.subject.strip():
             raise ValueError("Subject cannot be empty.")
 
-        if not self.body and not self.body.strip():
+        if not self.body or not self.body.strip():
             raise ValueError("Body cannot be empty.")

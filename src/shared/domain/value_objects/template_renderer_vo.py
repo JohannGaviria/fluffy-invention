@@ -25,5 +25,7 @@ class TemplateRendererVO(BaseValueObject, Generic[TemplateRendererContextType]):
         Raises:
             ValueError: If the context is None.
         """
+        if self.template_name is None:
+            raise ValueError("Template name cannot be None.")
         if self.context is None:
             raise ValueError("Context cannot be None.")

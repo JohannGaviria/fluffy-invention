@@ -13,6 +13,6 @@ class BaseValueObject(ABC):
         self.validate()
 
     @abstractmethod
-    def validate(self) -> None:
+    def validate(self) -> None:  # pragma: no cover
         """Override this method to implement validation logic for the value object."""
         pass
