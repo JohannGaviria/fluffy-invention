@@ -25,18 +25,18 @@ class DoctorProfileCommand:
     """Command DTO for doctor profile information.
 
     Attributes:
-        specialty_id (UUID): The ID of the doctor's specialty.
         license_number (str): The doctor's license number.
         experience_years (int): The number of years of experience the doctor has.
         is_active (bool): Indicates if the doctor is currently active.
+        specialty_id (UUID | None): The ID of the doctor's specialty.
         qualifications (str | None): The qualifications of the doctor.
         bio (str | None): A brief biography of the doctor.
     """
 
-    specialty_id: UUID
     license_number: str
     experience_years: int
     is_active: bool
+    specialty_id: UUID | None = None
     qualifications: str | None = None
     bio: str | None = None
 
