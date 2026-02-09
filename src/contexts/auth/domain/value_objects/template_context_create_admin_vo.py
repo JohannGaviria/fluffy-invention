@@ -21,13 +21,13 @@ class TemplateContextCreateAdminVO(TemplateContextVO):
         Raises:
             ValueError: If any required field is missing or invalid.
         """
-        if not self.first_name and not self.first_name.strip():
+        if not self.first_name or not self.first_name.strip():
             raise ValueError("First name cannot be empty")
-        if not self.last_name and not self.last_name.strip():
+        if not self.last_name or not self.last_name.strip():
             raise ValueError("Last name cannot be empty")
-        if not self.email and not self.email.strip():
+        if not self.email or not self.email.strip():
             raise ValueError("Email cannot be empty")
-        if not self.temporary_password and not self.temporary_password.strip():
+        if not self.temporary_password or not self.temporary_password.strip():
             raise ValueError("Temporary password cannot be empty")
 
     def to_dict(self) -> dict:
