@@ -21,22 +21,26 @@ class PasswordServiceAdapter(PasswordServicePort):
         """
         length = random.randint(8, 12)
 
-        required_chars = [
-            secrets.choice(string.ascii_lowercase),
-            secrets.choice(string.ascii_uppercase),
-            secrets.choice(string.digits),
-            secrets.choice(string.punctuation),
-        ]
-
-        # Ensure the password meets the required length
-        remaining_length = length - len(required_chars)
+        SPECIAL_CHARS = "!@#$%^&*()-_=+[]{}|;:,.<>?/\\"
 
         all_characters = (
             string.ascii_lowercase
             + string.ascii_uppercase
             + string.digits
-            + string.punctuation
+            + SPECIAL_CHARS
         )
+
+        # Ensure at least one character from each required category so that
+        # the generated password always satisfies validation constraints.
+        required_chars = [
+            secrets.choice(string.ascii_lowercase),
+            secrets.choice(string.ascii_uppercase),
+            secrets.choice(string.digits),
+            secrets.choice(SPECIAL_CHARS),
+        ]
+
+        # Ensure the password meets the required length
+        remaining_length = length - len(required_chars)
 
         # Fill the rest of the password length with random choices
         remaining_chars = [
