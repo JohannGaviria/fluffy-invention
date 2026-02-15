@@ -11,10 +11,14 @@ from src.contexts.auth.application.use_cases.login_use_case import LoginUseCase
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
+from src.contexts.auth.application.use_cases.update_user_password_use_case import (
+    UpdateUserPasswordUseCase,
+)
 from src.contexts.auth.domain.entities.entity import RolesEnum
 from src.contexts.auth.domain.exceptions.exception import (
     AccountTemporarilyBlockedException,
     ActivationCodeExpiredException,
+    CurrentPasswordIncorrectException,
     DoctorLicenseNumberAlreadyRegisteredException,
     DoctorProfileAlreadyExistsException,
     EmailAlreadyExistsException,
@@ -24,6 +28,7 @@ from src.contexts.auth.domain.exceptions.exception import (
     InvalidEmailException,
     InvalidPasswordException,
     InvalidPasswordHashException,
+    NewPasswordEqualsCurrentException,
     PatientDocumentAlreadyRegisteredException,
     PatientPhoneAlreadyRegisteredException,
     PatientProfileAlreadyExistsException,
@@ -36,12 +41,14 @@ from src.contexts.auth.presentation.api.compositions.use_cases_composition impor
     get_activate_account_use_case,
     get_login_use_case,
     get_register_user_use_case,
+    get_update_user_password_use_case,
 )
 from src.contexts.auth.presentation.api.mappers.mapper import AccessTokenResponseMapper
 from src.contexts.auth.presentation.api.schemas.schema import (
     ActivateUserAccountRequest,
     LoginRequest,
     RegisterUserRequest,
+    UpdateUserPasswordRequest,
 )
 from src.shared.domain.exceptions.exception import (
     DatabaseConnectionException,
@@ -302,4 +309,85 @@ async def login_user(
         raise
     except Exception as e:
         logger.error("Unexpected error during login", error=str(e))
+        raise
+
+
+@router.put(
+    path="/password",
+    summary="Update user password",
+    response_model=SuccessResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ErrorsResponse,
+            "description": "Bad Request - Invalid input data.",
+        },
+        status.HTTP_401_UNAUTHORIZED: {
+            "model": ErrorsResponse,
+            "description": "Unauthorized - Invalid credentials.",
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "model": ErrorsResponse,
+            "description": "Not Found - User not found.",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ErrorsResponse,
+            "description": "Internal Server Error - Database or server error.",
+        },
+    },
+)
+async def update_password(
+    request: UpdateUserPasswordRequest,
+    current_user: TokenPayloadVO = Depends(get_current_user),
+    use_case: UpdateUserPasswordUseCase = Depends(get_update_user_password_use_case),
+    logger: Logger = Depends(get_logger),
+) -> JSONResponse:
+    """Update the password of the current user.
+
+    This endpoint allows the currently authenticated user to update their password.
+    It handles various exceptions that may arise during the password update process
+    and returns appropriate HTTP responses.
+
+    Args:
+        request (UpdateUserPasswordRequest): The password update request data.
+        current_user (TokenPayloadVO): The currently authenticated user.
+        use_case (UpdateUserPasswordUseCase): The use case for updating the user password.
+        logger (Logger): The logger instance for logging events.
+
+    Returns:
+        JSONResponse: A JSON response indicating success or failure of the password update.
+
+    Raises:
+        HTTPException: Raised for various error conditions during password update.
+        NewPasswordEqualsCurrentException: If the new password is the same as the current password.
+        CurrentPasswordIncorrectException: If the current password is incorrect.
+        UserNotFoundException: If the user is not found.
+        DatabaseConnectionException: If there is a database connection error.
+        UnexpectedDatabaseException: For any unexpected database errors.
+    """
+    try:
+        use_case.execute(request.to_command(current_user.user_id))
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder(
+                SuccessResponse(
+                    message="password updated successfully",
+                ),
+                exclude_none=True,
+            ),
+        )
+    except NewPasswordEqualsCurrentException as e:
+        logger.warning("New password equal current", error=str(e))
+        raise
+    except CurrentPasswordIncorrectException as e:
+        logger.warning("Current password is incorrect", error=str(e))
+        raise
+    except UserNotFoundException as e:
+        logger.warning("User not found", error=str(e))
+        raise
+    except (DatabaseConnectionException, UnexpectedDatabaseException) as e:
+        logger.error("Database error during update password", error=str(e))
+        raise
+    except Exception as e:
+        logger.error("Unexpected error during update password", error=str(e))
         raise

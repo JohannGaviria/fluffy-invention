@@ -87,3 +87,18 @@ class CreateAdminCommand:
     first_name: str
     last_name: str
     email: str
+
+
+@dataclass
+class UpdateUserPasswordCommand:
+    """Command DTO for update user password.
+
+    Attributes:
+        user_id (UUID): The user's unique identifier.
+        current_password (str): The user's current password.
+        new_password (str): The user's new password.
+    """
+
+    user_id: UUID
+    current_password: str
+    new_password: str

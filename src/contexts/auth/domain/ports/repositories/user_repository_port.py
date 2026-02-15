@@ -5,10 +5,23 @@ from uuid import UUID
 
 from src.contexts.auth.domain.entities.entity import RolesEnum, UserEntity
 from src.contexts.auth.domain.value_objects.email_vo import EmailVO
+from src.contexts.auth.domain.value_objects.password_hash_vo import PasswordHashVO
 
 
 class UserRepositoryPort(ABC):
     """Abstract interface for User Repository operations."""
+
+    @abstractmethod
+    def find_by_id(self, id: UUID) -> UserEntity | None:
+        """Find a user by their user id.
+
+        Args:
+            id (UUID): The id to search for.
+
+        Returns:
+            UserEntity | None: The user entity if found, otherwise None
+        """
+        pass
 
     @abstractmethod
     def find_by_email(self, email: EmailVO) -> UserEntity | None:
@@ -53,5 +66,18 @@ class UserRepositoryPort(ABC):
 
         Returns:
             list[UserEntity]: A list of user entities with the specified role.
+        """
+        pass
+
+    @abstractmethod
+    def update_password(self, user_id: UUID, new: PasswordHashVO) -> None:
+        """Update the password of the user.
+
+        Args:
+            user_id (UUID): The unique identifier of the user.
+            new (PasswordHashVO): The new password hash to update.
+
+        Returns:
+            None
         """
         pass

@@ -4,6 +4,7 @@ from src.contexts.auth.domain.exceptions.exception import (
     AccountTemporarilyBlockedException,
     ActivationCodeExpiredException,
     AdminUserAlreadyExistsException,
+    CurrentPasswordIncorrectException,
     DoctorLicenseNumberAlreadyRegisteredException,
     DoctorProfileAlreadyExistsException,
     EmailAlreadyExistsException,
@@ -13,6 +14,7 @@ from src.contexts.auth.domain.exceptions.exception import (
     InvalidEmailException,
     InvalidPasswordException,
     InvalidPasswordHashException,
+    NewPasswordEqualsCurrentException,
     PatientDocumentAlreadyRegisteredException,
     PatientPhoneAlreadyRegisteredException,
     PatientProfileAlreadyExistsException,
@@ -126,6 +128,13 @@ class TestUserNotFoundException:
         assert exc.field == field
         assert f"User not found with {field}" in str(exc)
         assert issubclass(UserNotFoundException, BaseDomainException)
+
+    def test_should_create_with_id_field(self):
+        """Should create UserNotFoundException with 'id' as the search field."""
+        exc = UserNotFoundException("id")
+
+        assert exc.field == "id"
+        assert "User not found with id" in str(exc)
 
 
 class TestActivationCodeExpiredException:
@@ -254,3 +263,87 @@ class TestDoctorLicenseNumberAlreadyRegisteredException:
         assert issubclass(
             DoctorLicenseNumberAlreadyRegisteredException, BaseDomainException
         )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# New exceptions for update password feature
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+class TestNewPasswordEqualsCurrentException:
+    """Unit tests for NewPasswordEqualsCurrentException."""
+
+    def test_should_create_without_parameters(self):
+        """Should create NewPasswordEqualsCurrentException without parameters."""
+        exc = NewPasswordEqualsCurrentException()
+
+        assert "The new password cannot be the same as the current one" in str(exc)
+        assert issubclass(NewPasswordEqualsCurrentException, BaseDomainException)
+
+    def test_should_be_instance_of_base_domain_exception(self):
+        """Should be an instance of BaseDomainException."""
+        exc = NewPasswordEqualsCurrentException()
+
+        assert isinstance(exc, BaseDomainException)
+
+    def test_should_be_raised_and_caught_as_base_exception(self):
+        """Should be catchable as BaseDomainException."""
+        raised = False
+        try:
+            raise NewPasswordEqualsCurrentException()
+        except BaseDomainException:
+            raised = True
+
+        assert raised
+
+    def test_str_representation_contains_expected_message(self):
+        """String representation should contain the descriptive message."""
+        exc = NewPasswordEqualsCurrentException()
+
+        assert str(exc) == "The new password cannot be the same as the current one"
+
+
+class TestCurrentPasswordIncorrectException:
+    """Unit tests for CurrentPasswordIncorrectException."""
+
+    def test_should_create_without_parameters(self):
+        """Should create CurrentPasswordIncorrectException without parameters."""
+        exc = CurrentPasswordIncorrectException()
+
+        assert "The current password entered does not match the one registered" in str(
+            exc
+        )
+        assert issubclass(CurrentPasswordIncorrectException, BaseDomainException)
+
+    def test_should_be_instance_of_base_domain_exception(self):
+        """Should be an instance of BaseDomainException."""
+        exc = CurrentPasswordIncorrectException()
+
+        assert isinstance(exc, BaseDomainException)
+
+    def test_should_be_raised_and_caught_as_base_exception(self):
+        """Should be catchable as BaseDomainException."""
+        raised = False
+        try:
+            raise CurrentPasswordIncorrectException()
+        except BaseDomainException:
+            raised = True
+
+        assert raised
+
+    def test_str_representation_contains_expected_message(self):
+        """String representation should contain the descriptive message."""
+        exc = CurrentPasswordIncorrectException()
+
+        assert (
+            str(exc) == "The current password entered does not match the one registered"
+        )
+
+    def test_new_and_current_exceptions_are_different_types(self):
+        """NewPasswordEqualsCurrentException and CurrentPasswordIncorrectException must be distinct."""
+        new_exc = NewPasswordEqualsCurrentException()
+        current_exc = CurrentPasswordIncorrectException()
+
+        assert type(new_exc) is not type(current_exc)
+        assert not isinstance(new_exc, CurrentPasswordIncorrectException)
+        assert not isinstance(current_exc, NewPasswordEqualsCurrentException)

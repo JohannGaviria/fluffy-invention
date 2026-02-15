@@ -195,3 +195,21 @@ class DoctorLicenseNumberAlreadyRegisteredException(BaseDomainException):
     def __init__(self) -> None:
         """Initialize the DoctorLicenseNumberAlreadyRegisteredException."""
         super().__init__("Doctor license number already registered")
+
+
+class NewPasswordEqualsCurrentException(BaseDomainException):
+    """Exception raised when a new password equal current."""
+
+    def __init__(self) -> None:
+        """Initialize the NewPasswordEqualCurrentException."""
+        super().__init__("The new password cannot be the same as the current one")
+
+
+class CurrentPasswordIncorrectException(BaseDomainException):
+    """Exception raised when a current password incorrect exception."""
+
+    def __init__(self) -> None:
+        """Initialize the CurrentPasswordIncorrectException."""
+        super().__init__(
+            "The current password entered does not match the one registered"
+        )

@@ -105,11 +105,12 @@ Once the services are running, the API will be accessible at:
 
 Endpoints related to user authentication and account management.
 
-| Method | Endpoint             | Requires Auth | Description                                   |
-| ------ | -------------------- | ------------- | --------------------------------------------- |
-| `POST` | `/api/auth/register` |      Yes      | Register a new user                           |
-| `POST` | `/api/auth/activate` |       No      | Activate a user account using activation code |
-| `POST` | `/api/auth/login`    |       No      | Authenticate user and return access token     |
+| Method | Endpoint                | Requires Auth  | Description                                   |
+| ------ | ----------------------- | -------------- | --------------------------------------------- |
+| `POST` | `/api/auth/register`    |      Yes       | Register a new user                           |
+| `POST` | `/api/auth/activate`    |       No       | Activate a user account using activation code |
+| `POST` | `/api/auth/login`       |       No       | Authenticate user and return access token     |
+| `PUT`  | `/api/auth/password`    |       YES      | Update user password                          |
 
 ## License
 

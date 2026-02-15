@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 from src.contexts.auth.domain.exceptions.exception import (
     AccountTemporarilyBlockedException,
     ActivationCodeExpiredException,
+    CurrentPasswordIncorrectException,
     DoctorLicenseNumberAlreadyRegisteredException,
     DoctorProfileAlreadyExistsException,
     EmailAlreadyExistsException,
@@ -16,6 +17,7 @@ from src.contexts.auth.domain.exceptions.exception import (
     InvalidEmailException,
     InvalidPasswordException,
     InvalidPasswordHashException,
+    NewPasswordEqualsCurrentException,
     PatientDocumentAlreadyRegisteredException,
     PatientPhoneAlreadyRegisteredException,
     PatientProfileAlreadyExistsException,
@@ -519,7 +521,85 @@ class TestDoctorProfileAlreadyExistsExceptionHandler:
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Response structure (transversal)
+# NewPasswordEqualsCurrentException → 422 UNPROCESSABLE ENTITY
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+class TestNewPasswordEqualsCurrentExceptionHandler:
+    """Tests for NewPasswordEqualsCurrentException handler."""
+
+    @pytest.fixture
+    def client(self):
+        app = _make_app(
+            ("/test", lambda: NewPasswordEqualsCurrentException()),
+        )
+        return TestClient(app, raise_server_exceptions=False)
+
+    def test_returns_422_status_code(self, client):
+        assert client.get("/test").status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+    def test_returns_correct_message(self, client):
+        data = client.get("/test").json()
+        assert (
+            data["message"] == "The new password cannot be the same as the current one"
+        )
+
+    def test_returns_details_list(self, client):
+        data = client.get("/test").json()
+        assert isinstance(data["details"], list)
+
+    def test_details_contains_exception_message(self, client):
+        data = client.get("/test").json()
+        assert len(data["details"]) > 0
+        assert (
+            "same" in data["details"][0].lower()
+            or "current" in data["details"][0].lower()
+        )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# CurrentPasswordIncorrectException → 403 FORBIDDEN
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+class TestCurrentPasswordIncorrectExceptionHandler:
+    """Tests for CurrentPasswordIncorrectException handler."""
+
+    @pytest.fixture
+    def client(self):
+        app = _make_app(
+            ("/test", lambda: CurrentPasswordIncorrectException()),
+        )
+        return TestClient(app, raise_server_exceptions=False)
+
+    def test_returns_403_status_code(self, client):
+        assert client.get("/test").status_code == status.HTTP_403_FORBIDDEN
+
+    def test_returns_correct_message(self, client):
+        data = client.get("/test").json()
+        assert (
+            "current password" in data["message"].lower()
+            or "does not match" in data["message"].lower()
+        )
+
+    def test_returns_details_list(self, client):
+        data = client.get("/test").json()
+        assert isinstance(data["details"], list)
+
+    def test_details_is_non_empty(self, client):
+        data = client.get("/test").json()
+        assert len(data["details"]) > 0
+
+    def test_full_message_text(self, client):
+        data = client.get("/test").json()
+        assert (
+            data["message"]
+            == "The current password entered does not match the one registered."
+        )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Response structure (transversal) — now includes new exceptions
 # ──────────────────────────────────────────────────────────────────────────────
 
 
@@ -547,6 +627,9 @@ class TestExceptionHandlerResponseStructure:
         ("/patient-profile", lambda: PatientProfileAlreadyExistsException()),
         ("/doctor-license", lambda: DoctorLicenseNumberAlreadyRegisteredException()),
         ("/doctor-profile", lambda: DoctorProfileAlreadyExistsException()),
+        # New update-password exceptions
+        ("/new-pwd-equals-current", lambda: NewPasswordEqualsCurrentException()),
+        ("/current-pwd-incorrect", lambda: CurrentPasswordIncorrectException()),
     ]
 
     @pytest.fixture
@@ -574,3 +657,8 @@ class TestExceptionHandlerResponseStructure:
         data = client.get(path).json()
         assert isinstance(data["message"], str)
         assert data["message"]  # not empty
+
+    @pytest.mark.parametrize("path,_", CASES)
+    def test_details_is_always_non_empty(self, client, path, _):
+        data = client.get(path).json()
+        assert len(data["details"]) > 0
