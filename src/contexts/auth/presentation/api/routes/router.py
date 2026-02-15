@@ -72,7 +72,7 @@ router = APIRouter(prefix="/api/auth", tags=["Auth"])
             "model": ErrorsResponse,
             "description": "Forbidden - Unauthorized registration attempt.",
         },
-        status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        status.HTTP_422_UNPROCESSABLE_CONTENT: {
             "model": ErrorsResponse,
             "description": "Unprocessable Entity - Missing or invalid fields.",
         },
