@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from src.contexts.auth.domain.exceptions.exception import (
     AccountTemporarilyBlockedException,
     ActivationCodeExpiredException,
+    CurrentPasswordIncorrectException,
     DoctorLicenseNumberAlreadyRegisteredException,
     DoctorProfileAlreadyExistsException,
     EmailAlreadyExistsException,
@@ -16,6 +17,7 @@ from src.contexts.auth.domain.exceptions.exception import (
     InvalidEmailException,
     InvalidPasswordException,
     InvalidPasswordHashException,
+    NewPasswordEqualsCurrentException,
     PatientDocumentAlreadyRegisteredException,
     PatientPhoneAlreadyRegisteredException,
     PatientProfileAlreadyExistsException,
@@ -418,4 +420,50 @@ def register_auth_exceptions_handlers(app: FastAPI) -> None:
                 )
             ),
             status_code=status.HTTP_409_CONFLICT,
+        )
+
+    @app.exception_handler(NewPasswordEqualsCurrentException)
+    async def new_password_equal_current_exception_handler(
+        request: Request, exc: NewPasswordEqualsCurrentException
+    ) -> JSONResponse:
+        """Handle NewPasswordEqualsCurrentException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (NewPasswordEqualsCurrentException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="The new password cannot be the same as the current one",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        )
+
+    @app.exception_handler(CurrentPasswordIncorrectException)
+    async def current_password_incorrect_exception_handler(
+        request: Request, exc: CurrentPasswordIncorrectException
+    ) -> JSONResponse:
+        """Handle CurrentPasswordIncorrectException exceptions.
+
+        Args:
+            request (Request): The incoming request.
+            exc (CurrentPasswordIncorrectException): The raised exception.
+
+        Returns:
+            JSONResponse: A JSON response with error details.
+        """
+        return JSONResponse(
+            content=jsonable_encoder(
+                ErrorsResponse(
+                    message="The current password entered does not match the one registered.",
+                    details=[str(exc)],
+                )
+            ),
+            status_code=status.HTTP_403_FORBIDDEN,
         )

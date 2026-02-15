@@ -11,6 +11,7 @@ from src.contexts.auth.application.dto.command import (
     LoginCommand,
     PatientProfileCommand,
     RegisterUserCommand,
+    UpdateUserPasswordCommand,
 )
 from src.contexts.auth.domain.entities.entity import RolesEnum
 
@@ -260,3 +261,39 @@ class AccessTokenResponse(BaseModel):
             expires_at=dto.expires_at,
             expires_in=dto.expires_in,
         )
+
+
+class UpdateUserPasswordRequest(BaseModel):
+    """Request schema for updating a user's password.
+
+    Attributes:
+        current_password (str): The current password of the user.
+        new_password (str): The new password to be set for the user.
+    """
+
+    current_password: str
+    new_password: str
+
+    def to_command(self, user_id: UUID) -> UpdateUserPasswordCommand:
+        """Converts the request data to an UpdateUserPasswordCommand.
+
+        Args:
+            user_id (UUID): The unique identifier of the user.
+
+        Returns:
+            UpdateUserPasswordCommand: The command object with the request data.
+        """
+        return UpdateUserPasswordCommand(
+            user_id=user_id,
+            current_password=self.current_password,
+            new_password=self.new_password,
+        )
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "current_password": "OldPassword123",
+                "new_password": "NewSecurePassword456",
+            }
+        }
+    }

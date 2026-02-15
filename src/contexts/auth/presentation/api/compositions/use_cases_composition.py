@@ -10,6 +10,9 @@ from src.contexts.auth.application.use_cases.login_use_case import LoginUseCase
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
+from src.contexts.auth.application.use_cases.update_user_password_use_case import (
+    UpdateUserPasswordUseCase,
+)
 from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_doctor_repository_adapter import (
     SQLModelDoctorRepositoryAdapter,
 )
@@ -172,4 +175,28 @@ def get_login_use_case(
         settings.ACCESS_TOKEN_EXPIRES_IN,
         settings.LOGIN_ATTEMPTS_LIMIT,
         settings.LOGIN_WAITING_TIME,
+    )
+
+
+def get_update_user_password_use_case(
+    user_repository: SQLModelRepositoryAdapter = Depends(get_user_repository),
+    password_service: PasswordServiceAdapter = Depends(get_password_service),
+    password_hash_service: PasswordHashServiceAdapter = Depends(
+        get_password_hash_service
+    ),
+) -> UpdateUserPasswordUseCase:
+    """Get the UpdateUserPasswordUseCase instance.
+
+    Args:
+        user_repository (SQLModelRepositoryAdapter): The user repository.
+        password_service (PasswordServiceAdapter): The password service.
+        password_hash_service (PasswordHashServiceAdapter): The password hash service.
+
+    Returns:
+        UpdateUserPasswordUseCase: An instance of UpdateUserPasswordUseCase
+    """
+    return UpdateUserPasswordUseCase(
+        user_repository,
+        password_service,
+        password_hash_service,
     )
