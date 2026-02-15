@@ -19,6 +19,8 @@ from src.shared.domain.exceptions.exception import (
     UnexpectedDatabaseException,
 )
 
+_VALID_HASH = "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYJXRz.HV9K"
+
 
 class TestSQLModelRepositoryAdapter:
     """Unit tests for SQLModelRepositoryAdapter."""
@@ -52,7 +54,7 @@ class TestSQLModelRepositoryAdapter:
             first_name="John",
             last_name="Doe",
             email="john@example.com",
-            password="$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYJXRz.HV9K",
+            password=_VALID_HASH,
             role=RolesEnum.PATIENT,
             is_active=True,
             created_at=datetime.now(UTC),
@@ -67,14 +69,83 @@ class TestSQLModelRepositoryAdapter:
             first_name="Jane",
             last_name="Smith",
             email=EmailVO("jane@example.com"),
-            password_hash=PasswordHashVO(
-                "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYJXRz.HV9K"
-            ),
+            password_hash=PasswordHashVO(_VALID_HASH),
             role=RolesEnum.DOCTOR,
             is_active=False,
             created_at=datetime.now(UTC),
             updated_at=datetime.now(UTC),
         )
+
+    # ========== FIND BY ID TESTS ==========
+
+    def test_should_find_user_by_id_successfully(
+        self, repository, session_mock, user_model
+    ):
+        """Should find user by id successfully."""
+        user_id = user_model.id
+        result_mock = MagicMock()
+        result_mock.first.return_value = user_model
+        session_mock.exec.return_value = result_mock
+
+        user = repository.find_by_id(user_id)
+
+        assert user is not None
+        assert isinstance(user, UserEntity)
+        assert user.id == user_id
+        session_mock.exec.assert_called_once()
+
+    def test_should_return_none_when_user_not_found_by_id(
+        self, repository, session_mock
+    ):
+        """Should return None when user is not found by id."""
+        user_id = uuid4()
+        result_mock = MagicMock()
+        result_mock.first.return_value = None
+        session_mock.exec.return_value = result_mock
+
+        user = repository.find_by_id(user_id)
+
+        assert user is None
+
+    def test_should_raise_database_connection_exception_on_operational_error_find_by_id(
+        self, repository, session_mock, logger_mock
+    ):
+        """Should raise DatabaseConnectionException on OperationalError when finding by id."""
+        user_id = uuid4()
+        session_mock.exec.side_effect = OperationalError("conn error", None, None)
+
+        with pytest.raises(DatabaseConnectionException):
+            repository.find_by_id(user_id)
+
+        logger_mock.error.assert_called_once()
+
+    def test_should_raise_unexpected_database_exception_on_sqlalchemy_error_find_by_id(
+        self, repository, session_mock, logger_mock
+    ):
+        """Should raise UnexpectedDatabaseException on SQLAlchemyError when finding by id."""
+        user_id = uuid4()
+        session_mock.exec.side_effect = SQLAlchemyError("db error")
+
+        with pytest.raises(UnexpectedDatabaseException):
+            repository.find_by_id(user_id)
+
+        logger_mock.error.assert_called_once()
+
+    def test_should_map_model_fields_correctly_when_found_by_id(
+        self, repository, session_mock, user_model
+    ):
+        """Should correctly map UserModel fields to UserEntity when finding by id."""
+        result_mock = MagicMock()
+        result_mock.first.return_value = user_model
+        session_mock.exec.return_value = result_mock
+
+        user = repository.find_by_id(user_model.id)
+
+        assert user.first_name == user_model.first_name
+        assert user.last_name == user_model.last_name
+        assert user.email.value == user_model.email
+        assert user.role == user_model.role
+        assert user.is_active == user_model.is_active
 
     # ========== FIND BY EMAIL TESTS ==========
 
@@ -266,7 +337,7 @@ class TestSQLModelRepositoryAdapter:
             first_name="User1",
             last_name="Test",
             email="user1@example.com",
-            password="$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYJXRz.HV9K",
+            password=_VALID_HASH,
             role=RolesEnum.DOCTOR,
             is_active=True,
             created_at=datetime.now(UTC),
@@ -277,7 +348,7 @@ class TestSQLModelRepositoryAdapter:
             first_name="User2",
             last_name="Test",
             email="user2@example.com",
-            password="$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYJXRz.HV9K",
+            password=_VALID_HASH,
             role=RolesEnum.DOCTOR,
             is_active=True,
             created_at=datetime.now(UTC),
@@ -313,3 +384,107 @@ class TestSQLModelRepositoryAdapter:
             repository.find_by_role(RolesEnum.ADMIN)
 
         logger_mock.error.assert_called_once()
+
+    # ========== UPDATE PASSWORD TESTS ==========
+
+    def test_should_update_password_successfully(
+        self, repository, session_mock, user_model
+    ):
+        """Should update user password successfully."""
+        user_id = user_model.id
+        new_hash = PasswordHashVO(_VALID_HASH)
+
+        result_mock = MagicMock()
+        result_mock.first.return_value = user_model
+        session_mock.exec.return_value = result_mock
+
+        repository.update_password(user_id, new_hash)
+
+        assert user_model.password == str(new_hash)
+        session_mock.add.assert_called_once_with(user_model)
+        session_mock.commit.assert_called_once()
+
+    def test_should_not_update_password_when_user_not_found(
+        self, repository, session_mock
+    ):
+        """Should not update password when user is not found."""
+        user_id = uuid4()
+        new_hash = PasswordHashVO(_VALID_HASH)
+
+        result_mock = MagicMock()
+        result_mock.first.return_value = None
+        session_mock.exec.return_value = result_mock
+
+        repository.update_password(user_id, new_hash)
+
+        session_mock.add.assert_not_called()
+        session_mock.commit.assert_not_called()
+
+    def test_should_store_new_password_hash_as_string(
+        self, repository, session_mock, user_model
+    ):
+        """Should store the new password hash as a string on the model."""
+        new_hash = PasswordHashVO(_VALID_HASH)
+        result_mock = MagicMock()
+        result_mock.first.return_value = user_model
+        session_mock.exec.return_value = result_mock
+
+        repository.update_password(user_model.id, new_hash)
+
+        assert isinstance(user_model.password, str)
+        assert user_model.password == str(new_hash)
+
+    def test_should_raise_database_connection_exception_on_operational_error_update_password(
+        self, repository, session_mock, logger_mock
+    ):
+        """Should raise DatabaseConnectionException on OperationalError when updating password."""
+        user_id = uuid4()
+        new_hash = PasswordHashVO(_VALID_HASH)
+        session_mock.exec.side_effect = OperationalError("conn error", None, None)
+
+        with pytest.raises(DatabaseConnectionException):
+            repository.update_password(user_id, new_hash)
+
+        session_mock.rollback.assert_called_once()
+        logger_mock.error.assert_called_once()
+
+    def test_should_raise_unexpected_database_exception_on_sqlalchemy_error_update_password(
+        self, repository, session_mock, logger_mock, user_model
+    ):
+        """Should raise UnexpectedDatabaseException on SQLAlchemyError when updating password."""
+        new_hash = PasswordHashVO(_VALID_HASH)
+        result_mock = MagicMock()
+        result_mock.first.return_value = user_model
+        session_mock.exec.return_value = result_mock
+        session_mock.commit.side_effect = SQLAlchemyError("db error")
+
+        with pytest.raises(UnexpectedDatabaseException):
+            repository.update_password(user_model.id, new_hash)
+
+        session_mock.rollback.assert_called_once()
+        logger_mock.error.assert_called_once()
+
+    def test_should_rollback_on_operational_error_update_password(
+        self, repository, session_mock, logger_mock
+    ):
+        """Should rollback transaction on OperationalError during update_password."""
+        session_mock.exec.side_effect = OperationalError("conn error", None, None)
+
+        with pytest.raises(DatabaseConnectionException):
+            repository.update_password(uuid4(), PasswordHashVO(_VALID_HASH))
+
+        session_mock.rollback.assert_called_once()
+
+    def test_should_rollback_on_sqlalchemy_error_update_password(
+        self, repository, session_mock, logger_mock, user_model
+    ):
+        """Should rollback transaction on SQLAlchemyError during update_password."""
+        result_mock = MagicMock()
+        result_mock.first.return_value = user_model
+        session_mock.exec.return_value = result_mock
+        session_mock.commit.side_effect = SQLAlchemyError("unexpected")
+
+        with pytest.raises(UnexpectedDatabaseException):
+            repository.update_password(user_model.id, PasswordHashVO(_VALID_HASH))
+
+        session_mock.rollback.assert_called_once()
