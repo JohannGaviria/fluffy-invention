@@ -102,3 +102,18 @@ class UpdateUserPasswordCommand:
     user_id: UUID
     current_password: str
     new_password: str
+
+
+@dataclass
+class PasswordRecoveryCommand:
+    """Command DTO for password recovery.
+
+    Attributes:
+        email (str): The email address of the user.
+        request_ip (str): The IP address of the request.
+        request_user_agent (str): The user agent of the request.
+    """
+
+    email: str
+    request_ip: str
+    request_user_agent: str
