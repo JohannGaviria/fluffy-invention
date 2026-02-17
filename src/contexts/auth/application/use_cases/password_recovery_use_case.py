@@ -71,20 +71,25 @@ class PasswordRecoveryUseCase:
         Raises:
             UserNotFoundException: If the user is not found.
         """
+        # Search for the user by email
         user = self.user_repository_port.find_by_email(EmailVO(command.email))
         if not user:
             raise UserNotFoundException("email")
 
+        # Create a cache key for the password recovery
         password_recovery_cache_key = PasswordRecoveryCacheKeyVO.from_email(
             EmailVO(command.email)
         )
 
+        # Check if there is an active code
         active_code = self.cache_service_port.get(password_recovery_cache_key)
         if active_code:
             self.cache_service_port.delete(password_recovery_cache_key)
 
+        # Generate a new recovery code
         recovery_code = self.activation_code_service_port.generate()
 
+        # Create a cache entry for the password recovery
         value = PasswordRecoveryCacheValueVO(
             user_id=user.id, email=user.email, recovery_code=recovery_code
         )
@@ -92,6 +97,7 @@ class PasswordRecoveryUseCase:
         entry = CacheEntryVO(key=password_recovery_cache_key, ttl=ttl, value=value)
         self.cache_service_port.set(entry)
 
+        # Send recovery email to the user for password recovery
         template_name = TemplateNamePasswordRecoveryVO.create()
         context = TemplateContextPasswordRecoveryVO(
             first_name=user.first_name,
@@ -103,9 +109,11 @@ class PasswordRecoveryUseCase:
             request_user_agent=command.request_user_agent,
         )
 
+        # Render email template
         template = TemplateRendererVO(template_name=template_name, context=context)
         message = self.template_renderer_service_port.render(template)
 
+        # Send notification
         notification = SendNotificationVO(
             recipient=user.email.value, subject="Reset your password", body=message
         )
