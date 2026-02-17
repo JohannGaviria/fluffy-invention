@@ -1,6 +1,6 @@
 """This module contains the security composition for FastAPI dependencies."""
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWTError
 
@@ -50,3 +50,25 @@ def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
         ) from e
+
+
+def request_details_dependency(request: Request) -> dict:
+    """Dependency injector to get the request details.
+
+    Args:
+        request (Request): The FastAPI request object.
+
+    Returns:
+        dict: The request details.
+    """
+    x_forwarded_for = request.headers.get("x-forwarded-for")
+    request_ip = (
+        x_forwarded_for.split(",")[0].strip()
+        if x_forwarded_for
+        else (request.client.host if request.client else None)
+    )
+
+    return {
+        "request_ip": request_ip,
+        "request_user_agent": request.headers.get("user-agent", "Unknown"),
+    }

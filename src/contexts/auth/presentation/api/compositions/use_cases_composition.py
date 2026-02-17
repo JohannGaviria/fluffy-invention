@@ -7,6 +7,9 @@ from src.contexts.auth.application.use_cases.activate_account_use_case import (
     ActivateAccountUseCase,
 )
 from src.contexts.auth.application.use_cases.login_use_case import LoginUseCase
+from src.contexts.auth.application.use_cases.password_recovery_use_case import (
+    PasswordRecoveryUseCase,
+)
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
@@ -47,10 +50,12 @@ from src.contexts.auth.presentation.api.compositions.infrastructure_composition 
     get_doctor_repository,
     get_login_attempts_cache_service,
     get_password_hash_service,
+    get_password_recovery_cache_service,
     get_password_service,
     get_patient_repository,
     get_staff_email_policy_service,
     get_template_renderer_activate_account_service_service,
+    get_template_renderer_password_recovery_service,
     get_user_repository,
 )
 from src.shared.infrastructure.cache.redis_cache_service_adapter import (
@@ -199,4 +204,40 @@ def get_update_user_password_use_case(
         user_repository,
         password_service,
         password_hash_service,
+    )
+
+
+def get_password_recovery_use_case(
+    user_repository: SQLModelRepositoryAdapter = Depends(get_user_repository),
+    activation_code_service: ActivationCodeServiceAdapter = Depends(
+        get_activation_code_service
+    ),
+    cache_service: RedisCacheServiceAdapter = Depends(
+        get_password_recovery_cache_service
+    ),
+    template_renderer_service: TemplateRendererServiceAdapter = Depends(
+        get_template_renderer_password_recovery_service
+    ),
+    sender_notification_service: SenderNotificationServiceAdapter = Depends(
+        get_sender_notification_service
+    ),
+) -> PasswordRecoveryUseCase:
+    """Get the PasswordRecoveryUseCase instance.
+
+    Args:
+        user_repository (SQLModelRepositoryAdapter): The user repository.
+        activation_code_service (ActivationCodeServiceAdapter): The activation code service.
+        cache_service (RedisCacheServiceAdapter): The cache service.
+        template_renderer_service (TemplateRendererServiceAdapter): The template renderer service.
+        sender_notification_service (SenderNotificationServiceAdapter): The sender notification service.
+
+    Returns:
+        PasswordRecoveryUseCase: An instance of PasswordRecoveryUseCase.
+    """
+    return PasswordRecoveryUseCase(
+        user_repository,
+        activation_code_service,
+        cache_service,
+        template_renderer_service,
+        sender_notification_service,
     )

@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from src.contexts.auth.application.dto.command import (
     DoctorProfileCommand,
     LoginCommand,
+    PasswordRecoveryCommand,
     PatientProfileCommand,
     RegisterUserCommand,
     UpdateUserPasswordCommand,
@@ -274,6 +275,15 @@ class UpdateUserPasswordRequest(BaseModel):
     current_password: str
     new_password: str
 
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "current_password": "OldPassword123",
+                "new_password": "NewSecurePassword456",
+            }
+        }
+    }
+
     def to_command(self, user_id: UUID) -> UpdateUserPasswordCommand:
         """Converts the request data to an UpdateUserPasswordCommand.
 
@@ -289,11 +299,38 @@ class UpdateUserPasswordRequest(BaseModel):
             new_password=self.new_password,
         )
 
+
+class PasswordRecoveryRequest(BaseModel):
+    """Request schema for password recovery.
+
+    Attributes:
+        email (str): The email address of the user requesting password recovery.
+    """
+
+    email: str
+
     model_config = {
         "json_schema_extra": {
             "example": {
-                "current_password": "OldPassword123",
-                "new_password": "NewSecurePassword456",
+                "email": "user@example.com",
             }
         }
     }
+
+    def to_command(
+        self, request_ip: str, request_user_agent: str
+    ) -> PasswordRecoveryCommand:
+        """Converts the request data to a PasswordRecoveryCommand.
+
+        Args:
+            request_ip (str): The IP address of the request.
+            request_user_agent (str): The user agent of the request.
+
+        Returns:
+            PasswordRecoveryCommand: The command object with the request data.
+        """
+        return PasswordRecoveryCommand(
+            email=self.email,
+            request_ip=request_ip,
+            request_user_agent=request_user_agent,
+        )
