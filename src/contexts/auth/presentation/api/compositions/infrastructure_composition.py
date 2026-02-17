@@ -10,8 +10,14 @@ from src.contexts.auth.domain.value_objects.activation_code_cache_value_vo impor
 from src.contexts.auth.domain.value_objects.login_attempts_cache_value_vo import (
     LoginAttemptsCacheValueVO,
 )
+from src.contexts.auth.domain.value_objects.password_recovery_cache_value_vo import (
+    PasswordRecoveryCacheValueVO,
+)
 from src.contexts.auth.domain.value_objects.template_context_activate_account_vo import (
     TemplateContextActivateAccountVO,
+)
+from src.contexts.auth.domain.value_objects.template_context_password_recovery_vo import (
+    TemplateContextPasswordRecoveryVO,
 )
 from src.contexts.auth.infrastructure.persistence.repositories.sqlmodel_doctor_repository_adapter import (
     SQLModelDoctorRepositoryAdapter,
@@ -185,4 +191,33 @@ def get_template_renderer_activate_account_service_service() -> (
     """
     return TemplateRendererServiceAdapter(
         settings.TEMPLATE_PATH, TemplateContextActivateAccountVO
+    )
+
+
+def get_password_recovery_cache_service(
+    redis_client: RedisClient = Depends(get_redis_client),
+    logger: Logger = Depends(get_logger),
+) -> RedisCacheServiceAdapter[PasswordRecoveryCacheValueVO]:
+    """Get the Redis cache service adapter for password recovery.
+
+    Args:
+        redis_client (RedisClient): The Redis client instance.
+        logger (Logger): The logger instance.
+
+    Returns:
+        RedisCacheServiceAdapter[PasswordRecoveryCacheValueVO]: Cache service for password recovery.
+    """
+    return RedisCacheServiceAdapter(redis_client, logger, PasswordRecoveryCacheValueVO)
+
+
+def get_template_renderer_password_recovery_service() -> (
+    TemplateRendererServiceAdapter[TemplateContextPasswordRecoveryVO]
+):
+    """Get the template renderer service adapter for password recovery.
+
+    Returns:
+        TemplateRendererServiceAdapter[TemplateContextPasswordRecoveryVO]: Template renderer for password recovery.
+    """
+    return TemplateRendererServiceAdapter(
+        settings.TEMPLATE_PATH, TemplateContextPasswordRecoveryVO
     )

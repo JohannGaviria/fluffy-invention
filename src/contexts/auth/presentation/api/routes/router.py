@@ -8,6 +8,9 @@ from src.contexts.auth.application.use_cases.activate_account_use_case import (
     ActivateAccountUseCase,
 )
 from src.contexts.auth.application.use_cases.login_use_case import LoginUseCase
+from src.contexts.auth.application.use_cases.password_recovery_use_case import (
+    PasswordRecoveryUseCase,
+)
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
@@ -40,6 +43,7 @@ from src.contexts.auth.domain.value_objects.token_payload_vo import TokenPayload
 from src.contexts.auth.presentation.api.compositions.use_cases_composition import (
     get_activate_account_use_case,
     get_login_use_case,
+    get_password_recovery_use_case,
     get_register_user_use_case,
     get_update_user_password_use_case,
 )
@@ -47,6 +51,7 @@ from src.contexts.auth.presentation.api.mappers.mapper import AccessTokenRespons
 from src.contexts.auth.presentation.api.schemas.schema import (
     ActivateUserAccountRequest,
     LoginRequest,
+    PasswordRecoveryRequest,
     RegisterUserRequest,
     UpdateUserPasswordRequest,
 )
@@ -59,6 +64,7 @@ from src.shared.infrastructure.logging.logger import Logger
 from src.shared.presentation.api.compositions.security_composition import (
     get_current_user,
     get_logger,
+    request_details_dependency,
 )
 from src.shared.presentation.api.schemas.schemas import ErrorsResponse, SuccessResponse
 
@@ -382,6 +388,77 @@ async def update_password(
     except CurrentPasswordIncorrectException as e:
         logger.warning("Current password is incorrect", error=str(e))
         raise
+    except UserNotFoundException as e:
+        logger.warning("User not found", error=str(e))
+        raise
+    except (DatabaseConnectionException, UnexpectedDatabaseException) as e:
+        logger.error("Database error during update password", error=str(e))
+        raise
+    except Exception as e:
+        logger.error("Unexpected error during update password", error=str(e))
+        raise
+
+
+@router.post(
+    path="/password-recovery",
+    summary="Password recovery",
+    response_model=SuccessResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "model": ErrorsResponse,
+            "description": "Not Found - User not found.",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ErrorsResponse,
+            "description": "Internal Server Error - Database or server error.",
+        },
+    },
+)
+async def password_recovery(
+    request: PasswordRecoveryRequest,
+    request_details: dict = Depends(request_details_dependency),
+    use_case: PasswordRecoveryUseCase = Depends(get_password_recovery_use_case),
+    logger: Logger = Depends(get_logger),
+) -> JSONResponse:
+    """Password recovery send email.
+
+    This endpoint allows users to request a password recovery email. It handles the request
+    by delegating to the appropriate use case and returns a success response if the email
+    is sent successfully. If the user is not found, it raises a UserNotFoundException.
+
+    Args:
+        request (PasswordRecoveryRequest): The request data containing the email for password recovery.
+        request_details (dict): The request details including IP and user agent.
+        use_case (PasswordRecoveryUseCase): The use case for password recovery.
+        logger (Logger): The logger instance for logging events.
+
+    Returns:
+        JSONResponse: A JSON response indicating success or failure of the password recovery request.
+
+    Raises:
+        HTTPException: Raised for various error conditions during password recovery.
+        CurrentPasswordIncorrectException: If the current password is incorrect.
+        UserNotFoundException: If the user is not found.
+        DatabaseConnectionException: If there is a database connection error.
+        UnexpectedDatabaseException: For any unexpected database errors.
+    """
+    try:
+        use_case.execute(
+            request.to_command(
+                request_ip=request_details["request_ip"],
+                request_user_agent=request_details["request_user_agent"],
+            )
+        )
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder(
+                SuccessResponse(
+                    message="password recovery email sent successfully",
+                ),
+                exclude_none=True,
+            ),
+        )
     except UserNotFoundException as e:
         logger.warning("User not found", error=str(e))
         raise
