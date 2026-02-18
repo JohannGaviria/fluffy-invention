@@ -117,3 +117,18 @@ class PasswordRecoveryCommand:
     email: str
     request_ip: str
     request_user_agent: str
+
+
+@dataclass
+class ResetPasswordCommand:
+    """Command DTO for reset password.
+
+    Attributes:
+        recovery_code (str): The recovery code sent to the user's email.
+        new_password (str): The user's new password.
+        email (str): The email address of the user.
+    """
+
+    recovery_code: str
+    new_password: str
+    email: str

@@ -13,6 +13,9 @@ from src.contexts.auth.application.use_cases.password_recovery_use_case import (
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
+from src.contexts.auth.application.use_cases.reset_password_use_case import (
+    ResetPasswordUseCase,
+)
 from src.contexts.auth.application.use_cases.update_user_password_use_case import (
     UpdateUserPasswordUseCase,
 )
@@ -240,4 +243,30 @@ def get_password_recovery_use_case(
         cache_service,
         template_renderer_service,
         sender_notification_service,
+    )
+
+
+def get_reset_password_use_case(
+    user_repository: SQLModelRepositoryAdapter = Depends(get_user_repository),
+    password_hash_service: PasswordHashServiceAdapter = Depends(
+        get_password_hash_service
+    ),
+    cache_service: RedisCacheServiceAdapter = Depends(
+        get_password_recovery_cache_service
+    ),
+) -> ResetPasswordUseCase:
+    """Get the ResetPasswordUseCase instance.
+
+    Args:
+        user_repository (SQLModelRepositoryAdapter): The user repository.
+        password_hash_service (PasswordHashServiceAdapter): The password hash service.
+        cache_service (RedisCacheServiceAdapter): The cache service.
+
+    Returns:
+        ResetPasswordUseCase: An instance of ResetPasswordUseCase.
+    """
+    return ResetPasswordUseCase(
+        user_repository,
+        password_hash_service,
+        cache_service,
     )

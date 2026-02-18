@@ -59,7 +59,7 @@ class UpdateUserPasswordUseCase:
             PasswordVO(command.current_password), user.password_hash
         )
         if not is_current_password:
-            raise CurrentPasswordIncorrectException
+            raise CurrentPasswordIncorrectException()
 
         # Verify if the new password is the same as the current password
         is_same_password = self.password_hash_service_port.verify(

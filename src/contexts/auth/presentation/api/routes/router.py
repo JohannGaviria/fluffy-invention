@@ -14,6 +14,9 @@ from src.contexts.auth.application.use_cases.password_recovery_use_case import (
 from src.contexts.auth.application.use_cases.register_user_use_case import (
     RegisterUserUseCase,
 )
+from src.contexts.auth.application.use_cases.reset_password_use_case import (
+    ResetPasswordUseCase,
+)
 from src.contexts.auth.application.use_cases.update_user_password_use_case import (
     UpdateUserPasswordUseCase,
 )
@@ -45,6 +48,7 @@ from src.contexts.auth.presentation.api.compositions.use_cases_composition impor
     get_login_use_case,
     get_password_recovery_use_case,
     get_register_user_use_case,
+    get_reset_password_use_case,
     get_update_user_password_use_case,
 )
 from src.contexts.auth.presentation.api.mappers.mapper import AccessTokenResponseMapper
@@ -53,6 +57,7 @@ from src.contexts.auth.presentation.api.schemas.schema import (
     LoginRequest,
     PasswordRecoveryRequest,
     RegisterUserRequest,
+    ResetPasswordRequest,
     UpdateUserPasswordRequest,
 )
 from src.shared.domain.exceptions.exception import (
@@ -459,6 +464,75 @@ async def password_recovery(
                 exclude_none=True,
             ),
         )
+    except UserNotFoundException as e:
+        logger.warning("User not found", error=str(e))
+        raise
+    except (DatabaseConnectionException, UnexpectedDatabaseException) as e:
+        logger.error("Database error during update password", error=str(e))
+        raise
+    except Exception as e:
+        logger.error("Unexpected error during update password", error=str(e))
+        raise
+
+
+@router.put(
+    path="/reset-password",
+    summary="Reset password",
+    response_model=SuccessResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "model": ErrorsResponse,
+            "description": "Not Found - User not found.",
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            "model": ErrorsResponse,
+            "description": "Bad Request - Invalid request data.",
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "model": ErrorsResponse,
+            "description": "Internal Server Error - Database or server error.",
+        },
+    },
+)
+async def reset_password(
+    request: ResetPasswordRequest,
+    use_case: ResetPasswordUseCase = Depends(get_reset_password_use_case),
+    logger: Logger = Depends(get_logger),
+) -> JSONResponse:
+    """Reset password.
+
+    This endpoint allows a user to reset their password using a recovery code sent to their email.
+
+    Args:
+        request (ResetPasswordRequest): The request data containing the recovery code, new password, and email.
+        use_case (ResetPasswordUseCase): The use case for resetting the password.
+        logger (Logger): The logger instance for logging events.
+
+    Returns:
+        JSONResponse: A JSON response indicating success or failure of the password reset request.
+
+    Raises:
+        HTTPException: Raised for various error conditions during password reset.
+        NewPasswordEqualsCurrentException: If the new password is the same as the current password.
+        UserNotFoundException: If the user is not found.
+        DatabaseConnectionException: If there is a database connection error.
+        UnexpectedDatabaseException: For any unexpected database errors.
+    """
+    try:
+        use_case.execute(request.to_command())
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder(
+                SuccessResponse(
+                    message="password reset successfully",
+                ),
+                exclude_none=True,
+            ),
+        )
+    except NewPasswordEqualsCurrentException as e:
+        logger.warning("New password equal current", error=str(e))
+        raise
     except UserNotFoundException as e:
         logger.warning("User not found", error=str(e))
         raise

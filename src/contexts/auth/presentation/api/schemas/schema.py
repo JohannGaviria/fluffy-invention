@@ -12,6 +12,7 @@ from src.contexts.auth.application.dto.command import (
     PasswordRecoveryCommand,
     PatientProfileCommand,
     RegisterUserCommand,
+    ResetPasswordCommand,
     UpdateUserPasswordCommand,
 )
 from src.contexts.auth.domain.entities.entity import RolesEnum
@@ -333,4 +334,40 @@ class PasswordRecoveryRequest(BaseModel):
             email=self.email,
             request_ip=request_ip,
             request_user_agent=request_user_agent,
+        )
+
+
+class ResetPasswordRequest(BaseModel):
+    """Request schema for resetting a user's password.
+
+    Attributes:
+        recovery_code (str): The recovery code sent to the user's email.
+        new_password (str): The new password to be set for the user.
+        email (str): The email address of the user.
+    """
+
+    recovery_code: str
+    new_password: str
+    email: str
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "recovery_code": "123456",
+                "new_password": "NewSecurePassword456",
+                "email": "john.doe@example.com",
+            }
+        }
+    }
+
+    def to_command(self) -> ResetPasswordCommand:
+        """Converts the request data to a PasswordResetCommand.
+
+        Returns:
+            ResetPasswordCommand: The command object with the request data.
+        """
+        return ResetPasswordCommand(
+            recovery_code=self.recovery_code,
+            new_password=self.new_password,
+            email=self.email,
         )

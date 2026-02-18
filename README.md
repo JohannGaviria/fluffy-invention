@@ -112,6 +112,7 @@ Endpoints related to user authentication and account management.
 | `POST` | `/api/auth/login`                |       No       | Authenticate user and return access token     |
 | `PUT`  | `/api/auth/password`             |       Yes      | Update user password                          |
 | `POST` | `/api/auth/password-recovery`    |       No       | Request password recovery code                |
+| `PUT`  | `/api/auth/reset-password`       |       No       | Reset user password using recovery code       |
 
 ## License
 
