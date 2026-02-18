@@ -93,7 +93,6 @@ jobs:
           VERSION=$(git describe --tags --abbrev=0)
 
           docker build \
-            --target production \
             -t $IMAGE_NAME:$VERSION .
 
           docker push $IMAGE_NAME:$VERSION
