@@ -1,4 +1,4 @@
-"""Integration tests for POST /api/auth/reset-password."""
+"""Integration tests for PUT /api/auth/reset-password."""
 
 from unittest.mock import MagicMock
 from uuid import uuid4
@@ -99,7 +99,7 @@ def _make_app(reset_uc: ResetPasswordUseCase | None = None) -> FastAPI:
 
 
 class TestResetPasswordRoute:
-    """Integration tests for POST /api/auth/reset-password."""
+    """Integration tests for PUT /api/auth/reset-password."""
 
     @pytest.fixture
     def reset_uc_mock(self):
