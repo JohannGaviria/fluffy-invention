@@ -28,10 +28,10 @@ class Database:
         with cls._lock:
             if cls._engine is None:
                 logger.info(
-                    message="Creating new database engine", url=settings.database_url
+                    message="Creating new database engine", url=settings.DATABASE_URL
                 )
                 cls._engine = create_engine(
-                    settings.database_url,
+                    settings.DATABASE_URL,
                     echo=False,
                     pool_pre_ping=True,
                     pool_size=10,

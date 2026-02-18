@@ -31,25 +31,44 @@ Copy `.env.example` to `.env` and edit as needed, or set the variables directly 
 cp .env.example .env
 ```
 
-| Category               | Key               | Description                                                              | Example                                                                              |
-| -----------------------| ------------------| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------|
-| Application Metadata   | APP_NAME          | Human-readable name of the application                                   | Fluffy Invention                                                                     |
-| Application Metadata   | APP_SUMMARY       | Short summary describing the main purpose of the application             | System to manage medical appointments efficiently and centrally                      |
-| Application Metadata   | APP_DESCRIPTION   | Detailed description of the application and its business context         | Medical appointment management system for healthcare institutions                    |
-| Backend Configuration  | DEBUG             | Enables or disables debug mode for development and troubleshooting       | True                                                                                 |
-| Backend Configuration  | ENVIRONMENT       | Defines the runtime environment where the application is running         | development                                                                          |
-| Backend Configuration  | BACKEND_PORT      | Network port where the backend service listens for incoming requests     | 8000                                                                                 |
-| Backend Configuration  | BACKEND_WORKERS   | Number of worker processes used by the backend server to handle requests | 4                                                                                    |
-| Backend Configuration  | LOG_LEVEL         | Logging verbosity level used by the application                          | INFO                                                                                 |
-| Database Configuration | DATABASE_URL      | Full database connection string                                          | postgresql+psycopg2://postgres:password@fluffy-invention-db:5432/fluffy_invention_db |
-| Database Configuration | DB_PORT           | Port where the database service is exposed                               | 5432                                                                                 |
-| Database Configuration | POSTGRES_USER     | Username used to authenticate with the PostgreSQL database               | fluffy_user                                                                          |
-| Database Configuration | POSTGRES_PASSWORD | Password used to authenticate with the PostgreSQL database               | supersecret                                                                          |
-| Database Configuration | POSTGRES_DB       | Name of the PostgreSQL database                                          | fluffy_db                                                                            |
-| Redis Configuration    | REDIS_HOST        | Hostname or service name of the Redis instance                           | redis                                                                                |
-| Redis Configuration    | REDIS_PORT        | Port where the Redis service is exposed                                  | 6379                                                                                 |
-| Redis Configuration    | REDIS_PASSWORD    | Password for authenticating with Redis (if enabled)                      | redispass                                                                            |
-| Redis Configuration    | REDIS_DB          | Redis database index used by the application                             | 0                                                                                    |
+| Category                   | Key                          | Description                                                              | Example                                                                              |
+| -------------------------- | ---------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------|
+| Application Metadata       | APP_NAME                     | Human-readable name of the application                                   | Fluffy Invention                                                                     |
+| Application Metadata       | APP_SUMMARY                  | Short summary describing the main purpose of the application             | System to manage medical appointments efficiently and centrally                      |
+| Application Metadata       | APP_DESCRIPTION              | Detailed description of the application and its business context         | Medical appointment management system for healthcare institutions                    |
+| Backend Configuration      | DEBUG                        | Enables or disables debug mode for development and troubleshooting       | True                                                                                 |
+| Backend Configuration      | ENVIRONMENT                  | Defines the runtime environment where the application is running         | development                                                                          |
+| Backend Configuration      | BACKEND_PORT                 | Network port where the backend service listens for incoming requests     | 8000                                                                                 |
+| Backend Configuration      | BACKEND_WORKERS              | Number of worker processes used by the backend server to handle requests | 4                                                                                    |
+| Backend Configuration      | LOG_LEVEL                    | Logging verbosity level used by the application                          | INFO                                                                                 |
+| Backend Configuration      | ALLOWED_STAFF_EMAIL_DOMAINS  | Comma-separated list of allowed email domains for staff                  | example.com,healthcare.org                                                           |
+| Backend Configuration      | ALLOWED_STAFF_ROLES          | Comma-separated list of allowed staff roles                              | admin,doctor,receptionist                                                            |
+| Security Configuration     | JWT_SECRET_KEY               | Secret key for signing JWT tokens                                        | your_jwt_secret_key                                                                  |
+| Security Configuration     | JWT_ALGORITHM                | Algorithm used for signing JWT tokens                                    | HS256                                                                                |
+| Security Configuration     | ACCESS_TOKEN_EXPIRES_IN      | Expiration time for access tokens in seconds                             | 3600                                                                                 |
+| Security Configuration     | LOGIN_ATTEMPTS_LIMIT         | Maximum number of login attempts before blocking                         | 3                                                                                    |
+| Security Configuration     | LOGIN_WAITING_TIME           | Waiting time in seconds after reaching login attempts limit              | 300                                                                                  |
+| Security Configuration     | INITIAL_ADMIN_FIRST_NAME     | First name of the initial admin user                                     | John                                                                                 |
+| Security Configuration     | INITIAL_ADMIN_LAST_NAME      | Last name of the initial admin user                                      | Doe                                                                                  |
+| Security Configuration     | INITIAL_ADMIN_EMAIL          | Email of the initial admin user                                          | john.doe@example.com                                                                 |
+| CORS Configuration         | CORS_ALLOW_ORIGINS           | Comma-separated list of allowed origins for CORS                         | http://localhost:3000                                                                |
+| CORS Configuration         | CORS_ALLOW_CREDENTIALS       | Whether to allow credentials in CORS requests                            | True                                                                                 |
+| CORS Configuration         | CORS_ALLOW_METHODS           | Comma-separated list of allowed HTTP methods in CORS requests            | GET,POST,PUT,DELETE,OPTIONS                                                          |
+| CORS Configuration         | CORS_ALLOW_HEADERS           | Comma-separated list of allowed HTTP headers in CORS requests            | Authorization,Content-Type                                                           |
+| Database Configuration     | DATABASE_URL                 | Full database connection string                                          | postgresql+psycopg2://postgres:password@fluffy-invention-db:5432/fluffy_invention_db |
+| Database Configuration     | DB_PORT                      | Port where the database service is exposed                               | 5432                                                                                 |
+| Database Configuration     | POSTGRES_USER                | Username used to authenticate with the PostgreSQL database               | postgres                                                                             |
+| Database Configuration     | POSTGRES_PASSWORD            | Password used to authenticate with the PostgreSQL database               | password                                                                             |
+| Database Configuration     | POSTGRES_DB                  | Name of the PostgreSQL database                                          | fluffy_invention_db                                                                  |
+| Redis Configuration        | REDIS_PORT                   | Port where the Redis service is exposed                                  | 6379                                                                                 |
+| Redis Configuration        | REDIS_PASSWORD               | Password for authenticating with Redis (if enabled)                      | password                                                                             |
+| Redis Configuration        | REDIS_HOST                   | Hostname or service name of the Redis instance                           | redis                                                                                |
+| Redis Configuration        | REDIS_DB                     | Redis database index used by the application                             | 0                                                                                    |
+| Notification Configuration | SMTP_SERVER                  | SMTP server for sending emails                                           | smtp.gmail.com                                                                       |
+| Notification Configuration | SMTP_PORT                    | Port for the SMTP server                                                 | 587                                                                                  |
+| Notification Configuration | USER_EMAIL                   | Email address used for sending notifications                             | email@example.com                                                                    |
+| Notification Configuration | USER_PASSWORD                | Password for the email account                                           | your_app_email_password                                                              |
+| Notification Configuration | TEMPLATE_PATH                | Path to the email templates                                              | src/shared/infrastructure/notifications/templates/                                   |
 
 ---
 
@@ -79,6 +98,21 @@ Once the services are running, the API will be accessible at:
 [http://localhost:8000/docs](http://localhost:8000/docs) – this provides the **interactive Swagger UI** for testing all endpoints.
 
 ---
+
+## API Endpoints
+
+### Authentication Module
+
+Endpoints related to user authentication and account management.
+
+| Method | Endpoint                         | Requires Auth  | Description                                   |
+| ------ | -------------------------------- | -------------- | --------------------------------------------- |
+| `POST` | `/api/auth/register`             |      Yes       | Register a new user                           |
+| `POST` | `/api/auth/activate`             |       No       | Activate a user account using activation code |
+| `POST` | `/api/auth/login`                |       No       | Authenticate user and return access token     |
+| `PUT`  | `/api/auth/password`             |       Yes      | Update user password                          |
+| `POST` | `/api/auth/password-recovery`    |       No       | Request password recovery code                |
+| `PUT`  | `/api/auth/reset-password`       |       No       | Reset user password using recovery code       |
 
 ## License
 

@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     vim \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /src
+WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -22,12 +22,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 RUN groupadd -r appuser && useradd -r -g appuser appuser \
-    && chown -R appuser:appuser /src
+    && chown -R appuser:appuser /app
 
-RUN chmod +x /src/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-RUN if [ "$ENVIRONMENT" = "production" ]; then chown -R appuser:appuser /src; fi
+RUN if [ "$ENVIRONMENT" = "production" ]; then chown -R appuser:appuser /app; fi
 
 USER root
 
-CMD ["sh", "entrypoint.sh"]
+CMD ["sh", "/app/entrypoint.sh"]

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            line-height: 1.6;
+        }
+        .email-wrapper {
+            background-color: #f0f4f8;
+            padding: 40px 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .header {
+            background: linear-gradient(135deg, #0a4d68 0%, #088395 100%);
+            padding: 50px 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #05bfdb 0%, #088395 100%);
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin: 8px 0 0 0;
+            font-weight: 400;
+        }
+        .admin-badge {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .content {
+            padding: 45px 40px;
+        }
+        .greeting {
+            font-size: 26px;
+            color: #1a2332;
+            margin: 0 0 24px 0;
+            font-weight: 600;
+        }
+        .message {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #4a5568;
+            margin: 0 0 20px 0;
+        }
+        .message strong {
+            color: #0a4d68;
+            font-weight: 600;
+        }
+        .welcome-box {
+            background: linear-gradient(135deg, #e8f5f7 0%, #d4eef3 100%);
+            border-left: 4px solid #088395;
+            padding: 24px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        .welcome-box-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0a4d68;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .welcome-box-content {
+            font-size: 15px;
+            color: #2d3748;
+            margin: 0;
+            line-height: 1.7;
+        }
+        .credentials-section {
+            background-color: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .credentials-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a2332;
+            margin: 0 0 24px 0;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .credential-item {
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .credential-item:last-child {
+            margin-bottom: 0;
+        }
+        .credential-label {
+            font-size: 12px;
+            color: #718096;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .credential-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0a4d68;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 12px;
+            background-color: #f7fafc;
+            border-radius: 6px;
+            user-select: all;
+            word-break: break-all;
+        }
+        .credential-password .credential-value {
+            color: #7c3aed;
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border: 1px solid #ddd6fe;
+        }
+        .credential-note {
+            font-size: 13px;
+            color: #4a5568;
+            margin: 8px 0 0 0;
+            font-style: italic;
+        }
+        .steps-box {
+            background-color: #fffbeb;
+            border: 2px solid #fde68a;
+            border-radius: 10px;
+            padding: 24px;
+            margin: 30px 0;
+        }
+        .steps-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #92400e;
+            margin: 0 0 16px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .step-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+        .step-item:last-child {
+            margin-bottom: 0;
+        }
+        .step-number {
+            background-color: #f59e0b;
+            color: #ffffff;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .step-text {
+            font-size: 14px;
+            color: #78350f;
+            line-height: 1.6;
+            padding-top: 2px;
+        }
+        .security-note {
+            background-color: #fef2f2;
+            border: 2px solid #fecaca;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .security-note p {
+            margin: 0;
+            font-size: 14px;
+            color: #991b1b;
+            line-height: 1.7;
+        }
+        .security-note p:not(:last-child) {
+            margin-bottom: 12px;
+        }
+        .security-note strong {
+            color: #7f1d1d;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
+            margin: 35px 0;
+        }
+        .permissions-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-left: 4px solid #10b981;
+            padding: 20px 24px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+        .permissions-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #065f46;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .permissions-list {
+            font-size: 14px;
+            color: #064e3b;
+            margin: 0;
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+        .footer {
+            background-color: #f8fafc;
+            padding: 40px 40px 35px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer-brand {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .footer-brand-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0a4d68;
+            margin: 0 0 5px 0;
+        }
+        .footer-tagline {
+            font-size: 13px;
+            color: #718096;
+            margin: 0;
+            font-style: italic;
+        }
+        .footer-links {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer-links a {
+            color: #088395;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 12px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover {
+            color: #0a4d68;
+        }
+        .footer-info {
+            text-align: center;
+            font-size: 12px;
+            color: #a0aec0;
+            margin: 20px 0 0 0;
+            line-height: 1.6;
+        }
+        @media only screen and (max-width: 600px) {
+            .email-wrapper {
+                padding: 20px 10px;
+            }
+            .content {
+                padding: 35px 25px;
+            }
+            .greeting {
+                font-size: 22px;
+            }
+            .credentials-section {
+                padding: 20px;
+            }
+            .credential-value {
+                font-size: 16px;
+            }
+            .footer {
+                padding: 30px 25px 25px;
+            }
+            .footer-links a {
+                display: block;
+                margin: 8px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="email-container">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo-container">
+                    <div class="logo-icon">🏥</div>
+                    <h1 class="logo">Fluffy Invention</h1>
+                </div>
+                <p class="header-subtitle">Medical Healthcare Solutions</p>
+                <span class="admin-badge">👑 Administrator Account</span>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <h2 class="greeting">Welcome, {{ first_name }} {{ last_name }}!</h2>
+
+                <!-- Welcome Box -->
+                <div class="welcome-box">
+                    <p class="welcome-box-title">
+                        <span>🎉</span> Your Administrator Account Has Been Created
+                    </p>
+                    <p class="welcome-box-content">
+                        Congratulations! You have been granted administrator privileges for the <strong>Fluffy Invention</strong> healthcare management system. As the first administrator, you have full access to configure and manage the entire platform.
+                    </p>
+                </div>
+
+                <p class="message">
+                    Your account has been successfully created with full administrative privileges. Use the credentials below to access the system and begin configuring your healthcare platform.
+                </p>
+
+                <!-- Credentials Section -->
+                <div class="credentials-section">
+                    <h3 class="credentials-title">🔐 Your Login Credentials</h3>
+
+                    <div class="credential-item">
+                        <p class="credential-label">Email Address</p>
+                        <p class="credential-value">{{ email }}</p>
+                        <p class="credential-note">Use this email to log in to the system</p>
+                    </div>
+
+                    <div class="credential-item credential-password">
+                        <p class="credential-label">Temporary Password</p>
+                        <p class="credential-value">{{ temporary_password }}</p>
+                        <p class="credential-note">You will be required to change this password on first login</p>
+                    </div>
+                </div>
+
+                <!-- Next Steps -->
+                <div class="steps-box">
+                    <p class="steps-title">
+                        <span>📝</span> Next Steps
+                    </p>
+                    <div class="step-item">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Visit the admin portal at <strong>{{ login_url|default('https://admin.fluffyinvention.com') }}</strong></span>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Enter your email and temporary password to log in</span>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Create a new secure password when prompted</span>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-number">4</span>
+                        <span class="step-text">Complete your profile and configure system settings</span>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Administrator Permissions -->
+                <div class="permissions-box">
+                    <p class="permissions-title">
+                        <span>✓</span> Administrator Permissions
+                    </p>
+                    <ul class="permissions-list">
+                        <li>Full system configuration and settings management</li>
+                        <li>User and role management capabilities</li>
+                        <li>Access to all patient records and medical data</li>
+                        <li>Healthcare provider and staff administration</li>
+                        <li>Reporting and analytics dashboard</li>
+                        <li>Security and audit log access</li>
+                    </ul>
+                </div>
+
+                <!-- Security Note -->
+                <div class="security-note">
+                    <p>
+                        <strong>🔒 Security Notice:</strong> As an administrator, you have access to sensitive medical information. Please ensure you:
+                    </p>
+                    <p>
+                        • Change your temporary password immediately upon first login<br>
+                        • Use a strong, unique password with at least 12 characters<br>
+                        • Enable two-factor authentication (2FA) for enhanced security<br>
+                        • Never share your credentials with anyone<br>
+                        • Log out when not actively using the system
+                    </p>
+                </div>
+
+                <p class="message" style="margin-top: 30px;">
+                    If you have any questions or need assistance, our support team is available 24/7 to help you get started.
+                </p>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-brand">
+                    <p class="footer-brand-name">Fluffy Invention</p>
+                    <p class="footer-tagline">Your Health, Our Priority</p>
+                </div>
+
+                <div class="footer-links">
+                    <a href="{{ website_url|default('#') }}">Website</a>
+                    <a href="{{ support_url|default('#') }}">Support Center</a>
+                    <a href="{{ privacy_url|default('#') }}">Privacy Policy</a>
+                    <a href="{{ documentation_url|default('#') }}">Admin Documentation</a>
+                </div>
+
+                <p class="footer-info">
+                    123 Medical Center Drive, Healthcare City, HC 12345<br>
+                    24/7 Support: support@fluffyinvention.com | +1 (555) 123-4567<br>
+                    This is an automated message, please do not reply directly to this email.<br>
+                    © 2026 Fluffy Invention. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -20,6 +20,32 @@ class Settings(BaseSettings):
     BACKEND_PORT: int = Field(..., validation_alias="BACKEND_PORT")
     BACKEND_WORKERS: int = Field(..., validation_alias="BACKEND_WORKERS")
     LOG_LEVEL: str = Field(..., validation_alias="LOG_LEVEL")
+    ALLOWED_STAFF_EMAIL_DOMAINS: str = Field(
+        ..., validation_alias="ALLOWED_STAFF_EMAIL_DOMAINS"
+    )
+    ALLOWED_STAFF_ROLES: str = Field(..., validation_alias="ALLOWED_STAFF_ROLES")
+
+    # Security configuration
+    JWT_SECRET_KEY: str = Field(..., validation_alias="JWT_SECRET_KEY")
+    JWT_ALGORITHM: str = Field(..., validation_alias="JWT_ALGORITHM")
+    ACCESS_TOKEN_EXPIRES_IN: int = Field(
+        ..., validation_alias="ACCESS_TOKEN_EXPIRES_IN"
+    )
+    LOGIN_ATTEMPTS_LIMIT: int = Field(..., validation_alias="LOGIN_ATTEMPTS_LIMIT")
+    LOGIN_WAITING_TIME: int = Field(..., validation_alias="LOGIN_WAITING_TIME")
+    INITIAL_ADMIN_FIRST_NAME: str = Field(
+        ..., validation_alias="INITIAL_ADMIN_FIRST_NAME"
+    )
+    INITIAL_ADMIN_LAST_NAME: str = Field(
+        ..., validation_alias="INITIAL_ADMIN_LAST_NAME"
+    )
+    INITIAL_ADMIN_EMAIL: str = Field(..., validation_alias="INITIAL_ADMIN_EMAIL")
+
+    # CORS configuration
+    CORS_ALLOW_ORIGINS: str = Field(..., validation_alias="CORS_ALLOW_ORIGINS")
+    CORS_ALLOW_CREDENTIALS: bool = Field(..., validation_alias="CORS_ALLOW_CREDENTIALS")
+    CORS_ALLOW_METHODS: str = Field(..., validation_alias="CORS_ALLOW_METHODS")
+    CORS_ALLOW_HEADERS: str = Field(..., validation_alias="CORS_ALLOW_HEADERS")
 
     # Database configuration
     DATABASE_URL: str = Field(..., validation_alias="DATABASE_URL")
@@ -33,6 +59,13 @@ class Settings(BaseSettings):
     REDIS_PASSWORD: str = Field(..., validation_alias="REDIS_PASSWORD")
     REDIS_HOST: str = Field(..., validation_alias="REDIS_HOST")
     REDIS_DB: int = Field(..., validation_alias="REDIS_DB")
+
+    # Notification configuration
+    SMTP_SERVER: str = Field(..., validation_alias="SMTP_SERVER")
+    SMTP_PORT: int = Field(..., validation_alias="SMTP_PORT")
+    USER_EMAIL: str = Field(..., validation_alias="USER_EMAIL")
+    USER_PASSWORD: str = Field(..., validation_alias="USER_PASSWORD")
+    TEMPLATE_PATH: str = Field(..., validation_alias="TEMPLATE_PATH")
 
     model_config = SettingsConfigDict(env_file=".env")
 

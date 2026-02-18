@@ -32,8 +32,9 @@ jobs:
           ruff check . --config pyproject.toml
           mypy src/ --explicit-package-bases --config-file pyproject.toml
 
-      - name: Run tests
-        run: pytest -v
+      - name: Run tests with coverage
+        run: pytest --cov=src --cov-fail-under=80
+
 
   release:
     needs: build-and-test

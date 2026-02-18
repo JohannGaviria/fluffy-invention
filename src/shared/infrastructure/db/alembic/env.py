@@ -8,6 +8,12 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, pool
 from sqlmodel import SQLModel
 
+from src.contexts.auth.infrastructure.persistence.models.model import (
+    DoctorModel,  # noqa: F401
+    PatientModel,  # noqa: F401,
+    UserModel,  # noqa: F401
+)
+
 load_dotenv()
 
 
