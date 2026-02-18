@@ -475,7 +475,7 @@ async def password_recovery(
         raise
 
 
-@router.post(
+@router.put(
     path="/reset-password",
     summary="Reset password",
     response_model=SuccessResponse,
