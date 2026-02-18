@@ -1,13 +1,12 @@
 [project]
 name = "fluffy-invention"
-version = "0.0.0"
+version = "1.0.0"
 description = "FastAPI project"
 requires-python = ">=3.12"
 
 [tool.ruff]
-line-length = 88
 target-version = "py312"
-output-format = "pylint"
+line-length = 88
 
 [tool.ruff.lint]
 select = [
@@ -20,7 +19,10 @@ select = [
     "C4",
     "D",
 ]
-ignore = ["E501", "B008"]
+ignore = [
+    "E501",
+    "B008",
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -37,8 +39,8 @@ line-ending = "lf"
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
-force-wrap-aliases = true
 case-sensitive = true
+force-wrap-aliases = true
 split-on-trailing-comma = true
 
 [tool.mypy]
