@@ -77,6 +77,27 @@ class SQLModelDoctorRepositoryAdapter(DoctorRepositoryPort):
             self.logger.error(message="Unexpected database error.", error=str(e))
             raise UnexpectedDatabaseException("Unexpected database error.") from e
 
+    def is_active(self, doctor_id: UUID) -> bool:
+        """Check if a doctor is active.
+
+        Args:
+            doctor_id (UUID): Doctor ID to check.
+
+        Returns:
+            bool: True if the doctor is active, False otherwise.
+        """
+        try:
+            model = self.session.exec(
+                select(DoctorModel).where(DoctorModel.id == doctor_id)
+            ).first()
+            return model.is_active if model else False
+        except OperationalError as e:
+            self.logger.error(message="Could not connect to database.", error=str(e))
+            raise DatabaseConnectionException("Could not connect to database.") from e
+        except SQLAlchemyError as e:
+            self.logger.error(message="Unexpected database error.", error=str(e))
+            raise UnexpectedDatabaseException("Unexpected database error.") from e
+
     def save(self, entity: DoctorEntity) -> None:
         """Save the given entity.
 

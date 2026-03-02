@@ -182,6 +182,74 @@ class TestSQLModelDoctorRepositoryAdapter:
 
         logger_mock.error.assert_called_once()
 
+    # ========== IS ACTIVE TESTS ==========
+
+    def test_should_return_true_when_doctor_is_active(
+        self, repository, session_mock, doctor_model
+    ):
+        """Should return True when doctor exists and is_active is True."""
+        doctor_model.is_active = True
+        doctor_id = doctor_model.id
+        result_mock = MagicMock()
+        result_mock.first.return_value = doctor_model
+        session_mock.exec.return_value = result_mock
+
+        result = repository.is_active(doctor_id)
+
+        assert result is True
+        session_mock.exec.assert_called_once()
+
+    def test_should_return_false_when_doctor_is_inactive(
+        self, repository, session_mock, doctor_model
+    ):
+        """Should return False when doctor exists and is_active is False."""
+        doctor_model.is_active = False
+        doctor_id = doctor_model.id
+        result_mock = MagicMock()
+        result_mock.first.return_value = doctor_model
+        session_mock.exec.return_value = result_mock
+
+        result = repository.is_active(doctor_id)
+
+        assert result is False
+
+    def test_should_return_false_when_doctor_not_found_in_is_active(
+        self, repository, session_mock
+    ):
+        """Should return False when doctor is not found."""
+        doctor_id = uuid4()
+        result_mock = MagicMock()
+        result_mock.first.return_value = None
+        session_mock.exec.return_value = result_mock
+
+        result = repository.is_active(doctor_id)
+
+        assert result is False
+
+    def test_should_raise_database_connection_exception_on_operational_error_is_active(
+        self, repository, session_mock, logger_mock
+    ):
+        """Should raise DatabaseConnectionException on OperationalError when checking is_active."""
+        doctor_id = uuid4()
+        session_mock.exec.side_effect = OperationalError("conn error", None, None)
+
+        with pytest.raises(DatabaseConnectionException):
+            repository.is_active(doctor_id)
+
+        logger_mock.error.assert_called_once()
+
+    def test_should_raise_unexpected_database_exception_on_sqlalchemy_error_is_active(
+        self, repository, session_mock, logger_mock
+    ):
+        """Should raise UnexpectedDatabaseException on SQLAlchemyError when checking is_active."""
+        doctor_id = uuid4()
+        session_mock.exec.side_effect = SQLAlchemyError("db error")
+
+        with pytest.raises(UnexpectedDatabaseException):
+            repository.is_active(doctor_id)
+
+        logger_mock.error.assert_called_once()
+
     # ========== SAVE TESTS ==========
 
     def test_should_save_doctor_successfully(

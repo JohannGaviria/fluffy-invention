@@ -33,6 +33,18 @@ class DoctorRepositoryPort(ABC):
         pass
 
     @abstractmethod
+    def is_active(self, doctor_id: UUID) -> bool:
+        """Checks if a doctor is active.
+
+        Args:
+            doctor_id (UUID): The doctor ID to check.
+
+        Returns:
+            bool: True if the doctor is active, False otherwise.
+        """
+        pass
+
+    @abstractmethod
     def save(self, entity: DoctorEntity) -> None:
         """Saves a DoctorEntity to the repository.
 
