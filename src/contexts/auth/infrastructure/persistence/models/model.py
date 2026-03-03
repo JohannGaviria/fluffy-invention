@@ -88,7 +88,7 @@ class DoctorModel(SQLModel, table=True):
     user_id: UUID = Field(
         foreign_key="users.id", nullable=False, unique=True, index=True
     )
-    specialty_id: UUID | None = Field(default=None, nullable=False, index=True)
+    specialty_id: UUID | None = Field(default=None, nullable=True, index=True)
     license_number: str = Field(max_length=50, nullable=False, unique=True, index=True)
     experience_years: int = Field(default=0, nullable=False)
     qualifications: str = Field(max_length=2000, nullable=True)
