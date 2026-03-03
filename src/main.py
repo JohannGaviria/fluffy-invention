@@ -1,5 +1,7 @@
 """This module contains the main FastAPI application."""
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,15 +10,30 @@ from src.contexts.auth.presentation.api.exceptions.exceptions_handlers import (
     register_auth_exceptions_handlers,
 )
 from src.contexts.auth.presentation.api.routes.router import router
+from src.shared.infrastructure.db.mongo import MongoDatabase
 from src.shared.presentation.api.exceptions.exceptions_handlers import (
     register_exceptions_handlers,
 )
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for the FastAPI application.
+
+    Args:
+        app (FastAPI): The FastAPI application instance.
+    """
+    await MongoDatabase.init_beanie(document_models=[])
+    yield
+    MongoDatabase.close_client()
+
 
 app = FastAPI(
     title=settings.APP_NAME,
     summary=settings.APP_SUMMARY,
     description=settings.APP_DESCRIPTION,
     debug=settings.DEBUG,
+    lifespan=lifespan,
 )
 
 app.include_router(router)

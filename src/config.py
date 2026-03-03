@@ -60,6 +60,13 @@ class Settings(BaseSettings):
     REDIS_HOST: str = Field(..., validation_alias="REDIS_HOST")
     REDIS_DB: int = Field(..., validation_alias="REDIS_DB")
 
+    # MongoDB configuration
+    MONGO_PORT: int = Field(..., validation_alias="MONGO_PORT")
+    MONGO_USER: str = Field(..., validation_alias="MONGO_USER")
+    MONGO_PASSWORD: str = Field(..., validation_alias="MONGO_PASSWORD")
+    MONGO_DB: str = Field(..., validation_alias="MONGO_DB")
+    MONGO_URL: str = Field(..., validation_alias="MONGO_URL")
+
     # Notification configuration
     SMTP_SERVER: str = Field(..., validation_alias="SMTP_SERVER")
     SMTP_PORT: int = Field(..., validation_alias="SMTP_PORT")
