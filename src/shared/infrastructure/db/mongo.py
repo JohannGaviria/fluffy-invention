@@ -1,9 +1,11 @@
 """This module contains the Database class for managing the Beanie/Motor MongoDB connection."""
 
 from threading import Lock
+from typing import cast
 
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo.asynchronous.database import AsyncDatabase
 
 from src.config import settings
 from src.shared.infrastructure.logging.logger import get_logger
@@ -52,7 +54,7 @@ class MongoDatabase:
         client = cls.get_client()
         logger.info(message="Initializing Beanie ODM", database=settings.MONGO_DB)
         await init_beanie(
-            database=client[settings.MONGO_DB],
+            database=cast(AsyncDatabase, client[settings.MONGO_DB]),
             document_models=document_models,
         )
 
