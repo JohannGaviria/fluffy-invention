@@ -70,7 +70,7 @@ class DoctorProfileRequest(BaseProfile):
     """Request schema for doctor profile.
 
     Attributes:
-        specialty_id (UUID): The unique identifier for the doctor's specialty.
+        specialty_id (UUID | None): The unique identifier for the doctor's specialty.
         license_number (str): The medical license number of the doctor.
         experience_years (int): The number of years of experience the doctor has.
         is_active (bool): Indicates if the doctor's profile is active.
@@ -79,7 +79,7 @@ class DoctorProfileRequest(BaseProfile):
     """
 
     profile_type: Literal["doctor"]
-    specialty_id: UUID
+    specialty_id: UUID | None = None
     license_number: str
     experience_years: int
     is_active: bool
@@ -90,7 +90,6 @@ class DoctorProfileRequest(BaseProfile):
         "json_schema_extra": {
             "example": {
                 "profile_type": "doctor",
-                "specialty_id": "d290f1ee-6c54-4b018-9d5f-ff5af830be8a",
                 "license_number": "MED123456",
                 "experience_years": 5,
                 "is_active": True,
@@ -137,16 +136,39 @@ class RegisterUserRequest(BaseModel):
 
     model_config = {
         "json_schema_extra": {
-            "example": {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "john.doe@example.com",
-                "role": "patient",
-                "profile": {
-                    "profile_type": "patient",
-                    "document": "123456789",
-                    "phone": "+1234567890",
-                    "birth_date": "1990-01-01",
+            "examples": {
+                "patient_example": {
+                    "summary": "Patient registration",
+                    "value": {
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "email": "john.doe@example.com",
+                        "role": "patient",
+                        "profile": {
+                            "profile_type": "patient",
+                            "document": "123456789",
+                            "phone": "+1234567890",
+                            "birth_date": "1990-01-01",
+                        },
+                    },
+                },
+                "doctor_example": {
+                    "summary": "Doctor registration",
+                    "value": {
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "email": "john.doe@example.com",
+                        "role": "doctor",
+                        "profile": {
+                            "profile_type": "doctor",
+                            "specialty_id": "d290f1ee-6c54-4b018-9d5f-ff5af830be8a",
+                            "license_number": "MED123456",
+                            "experience_years": 5,
+                            "is_active": True,
+                            "qualifications": "Board Certified in Internal Medicine",
+                            "bio": "Experienced physician with a passion for patient care.",
+                        },
+                    },
                 },
             }
         }
