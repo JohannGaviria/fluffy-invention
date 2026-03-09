@@ -10,6 +10,18 @@ class DoctorRepositoryPort(ABC):
     """Abstract interface for Doctor Repository operations."""
 
     @abstractmethod
+    def find_by_id(self, id: UUID) -> DoctorEntity | None:
+        """Finds a DoctorEntity by ID.
+
+        Args:
+            id (UUID): The ID of the doctor to find.
+
+        Returns:
+            DoctorEntity | None: The found doctor entity or None if not found.
+        """
+        pass
+
+    @abstractmethod
     def find_by_user_id(self, user_id: UUID) -> DoctorEntity | None:
         """Finds a DoctorEntity by user ID.
 

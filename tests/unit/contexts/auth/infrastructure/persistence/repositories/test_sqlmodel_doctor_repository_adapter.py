@@ -73,6 +73,65 @@ class TestSQLModelDoctorRepositoryAdapter:
             updated_at=datetime.now(UTC),
         )
 
+    # ========== FIND BY ID TESTS ==========
+
+    def test_should_find_doctor_by_id_successfully(
+        self, repository, session_mock, doctor_model
+    ):
+        """Should find doctor by id successfully."""
+        doctor_id = doctor_model.id
+
+        result_mock = MagicMock()
+        result_mock.first.return_value = doctor_model
+        session_mock.exec.return_value = result_mock
+
+        doctor = repository.find_by_id(doctor_id)
+
+        assert doctor is not None
+        assert isinstance(doctor, DoctorEntity)
+        assert doctor.id == doctor_id
+        session_mock.exec.assert_called_once()
+
+    def test_should_return_none_when_doctor_not_found_by_id(
+        self, repository, session_mock
+    ):
+        """Should return None when doctor is not found by id."""
+        doctor_id = uuid4()
+
+        result_mock = MagicMock()
+        result_mock.first.return_value = None
+        session_mock.exec.return_value = result_mock
+
+        doctor = repository.find_by_id(doctor_id)
+
+        assert doctor is None
+
+    def test_should_raise_database_connection_exception_on_operational_error_find_by_id(
+        self, repository, session_mock, logger_mock
+    ):
+        """Should raise DatabaseConnectionException on OperationalError when finding by id."""
+        doctor_id = uuid4()
+
+        session_mock.exec.side_effect = OperationalError("conn error", None, None)
+
+        with pytest.raises(DatabaseConnectionException):
+            repository.find_by_id(doctor_id)
+
+        logger_mock.error.assert_called_once()
+
+    def test_should_raise_unexpected_database_exception_on_sqlalchemy_error_find_by_id(
+        self, repository, session_mock, logger_mock
+    ):
+        """Should raise UnexpectedDatabaseException on SQLAlchemyError when finding by id."""
+        doctor_id = uuid4()
+
+        session_mock.exec.side_effect = SQLAlchemyError("db error")
+
+        with pytest.raises(UnexpectedDatabaseException):
+            repository.find_by_id(doctor_id)
+
+        logger_mock.error.assert_called_once()
+
     # ========== FIND BY USER ID TESTS ==========
 
     def test_should_find_doctor_by_user_id_successfully(
