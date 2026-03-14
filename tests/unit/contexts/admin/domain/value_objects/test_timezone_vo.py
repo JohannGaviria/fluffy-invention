@@ -1,0 +1,125 @@
+"""Unit tests for TimezoneVO."""
+
+from dataclasses import FrozenInstanceError
+
+import pytest
+
+from src.contexts.admin.domain.value_objects.timezone_vo import TimezoneVO
+
+
+class TestTimezoneVOCreation:
+    """Tests for TimezoneVO creation and field access."""
+
+    def test_should_create_successfully_with_utc(self):
+        """Should create TimezoneVO with UTC timezone."""
+        vo = TimezoneVO(timezone="UTC")
+
+        assert vo.timezone == "UTC"
+
+    def test_should_create_successfully_with_america_new_york(self):
+        """Should create TimezoneVO with America/New_York."""
+        vo = TimezoneVO(timezone="America/New_York")
+
+        assert vo.timezone == "America/New_York"
+
+    def test_should_create_successfully_with_america_bogota(self):
+        """Should create TimezoneVO with America/Bogota."""
+        vo = TimezoneVO(timezone="America/Bogota")
+
+        assert vo.timezone == "America/Bogota"
+
+    def test_should_create_successfully_with_europe_london(self):
+        """Should create TimezoneVO with Europe/London."""
+        vo = TimezoneVO(timezone="Europe/London")
+
+        assert vo.timezone == "Europe/London"
+
+    def test_should_create_successfully_with_asia_tokyo(self):
+        """Should create TimezoneVO with Asia/Tokyo."""
+        vo = TimezoneVO(timezone="Asia/Tokyo")
+
+        assert vo.timezone == "Asia/Tokyo"
+
+    def test_should_be_frozen_dataclass(self):
+        """Should be immutable (frozen dataclass)."""
+        vo = TimezoneVO(timezone="UTC")
+
+        with pytest.raises(FrozenInstanceError):
+            vo.timezone = "America/New_York"
+
+    def test_should_create_with_various_valid_timezones(self):
+        """Should create TimezoneVO with a range of valid IANA timezones."""
+        valid_timezones = [
+            "UTC",
+            "America/Bogota",
+            "America/New_York",
+            "America/Los_Angeles",
+            "America/Sao_Paulo",
+            "Europe/London",
+            "Europe/Paris",
+            "Asia/Tokyo",
+            "Australia/Sydney",
+        ]
+
+        for tz in valid_timezones:
+            vo = TimezoneVO(timezone=tz)
+            assert vo.timezone == tz
+
+
+class TestTimezoneVOPostInit:
+    """Tests for TimezoneVO.__post_init__ validation (runs at construction)."""
+
+    def test_raises_value_error_for_invalid_timezone(self):
+        """Should raise ValueError when timezone string is not a valid IANA zone."""
+        with pytest.raises(ValueError, match="Invalid timezone"):
+            TimezoneVO(timezone="Invalid/Zone")
+
+    def test_raises_value_error_for_random_string(self):
+        """Should raise ValueError for a completely random string."""
+        with pytest.raises(ValueError, match="Invalid timezone"):
+            TimezoneVO(timezone="not_a_timezone")
+
+    def test_raises_value_error_for_lowercase_utc(self):
+        """Should raise ValueError for 'utc' (IANA zones are case-sensitive)."""
+        with pytest.raises(ValueError):
+            TimezoneVO(timezone="utc")
+
+    def test_raises_value_error_for_partial_timezone(self):
+        """Should raise ValueError for a partial timezone string."""
+        with pytest.raises(ValueError, match="Invalid timezone"):
+            TimezoneVO(timezone="America")
+
+
+class TestTimezoneVOValidate:
+    """Tests for TimezoneVO.validate()."""
+
+    def test_validate_passes_for_valid_timezone(self):
+        """Should not raise when timezone is valid."""
+        vo = TimezoneVO(timezone="UTC")
+
+        vo.validate()  # must not raise
+
+    def test_validate_raises_for_empty_string(self):
+        """Should raise ValueError when timezone is empty."""
+        # Empty string fails __post_init__ first (ZoneInfoNotFoundError → ValueError).
+        # We bypass __post_init__ by using object.__setattr__ on the frozen instance
+        # to directly test validate().
+        vo = TimezoneVO.__new__(TimezoneVO)
+        object.__setattr__(vo, "timezone", "")
+
+        with pytest.raises(ValueError, match="Timezone cannot be empty"):
+            vo.validate()
+
+    def test_validate_raises_for_whitespace_only(self):
+        """Should raise ValueError when timezone is only whitespace."""
+        vo = TimezoneVO.__new__(TimezoneVO)
+        object.__setattr__(vo, "timezone", "   ")
+
+        with pytest.raises(ValueError, match="Timezone cannot be empty"):
+            vo.validate()
+
+    def test_validate_passes_for_america_bogota(self):
+        """Should not raise when timezone is America/Bogota."""
+        vo = TimezoneVO(timezone="America/Bogota")
+
+        vo.validate()  # must not raise
