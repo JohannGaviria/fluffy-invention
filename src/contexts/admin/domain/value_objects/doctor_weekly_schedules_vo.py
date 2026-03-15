@@ -76,3 +76,14 @@ class DoctorWeeklySchedulesVO(BaseValueObject):
                     f"overlaps with "
                     f"{next_slot.start_time}-{next_slot.end_time}"
                 )
+
+    def to_dict(self) -> dict:
+        """Convert the DoctorWeeklySchedulesVO to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of the DoctorWeeklySchedulesVO.
+        """
+        return {
+            day: [slot.to_dict() for slot in slots]
+            for day, slots in self.schedules.items()
+        }

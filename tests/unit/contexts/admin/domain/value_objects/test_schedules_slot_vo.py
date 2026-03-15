@@ -6,6 +6,7 @@ from datetime import time
 import pytest
 
 from src.contexts.admin.domain.value_objects.schedules_slot_vo import SchedulesSlotVO
+from src.shared.domain.exceptions.exception import MissingFieldException
 
 
 class TestSchedulesSlotVOCreation:
@@ -81,6 +82,70 @@ class TestSchedulesSlotVOCreation:
 
         assert slot.start_time == time(8, 30)
         assert slot.end_time == time(9, 30)
+
+
+class TestSchedulesSlotVOMissingFields:
+    """Tests for MissingFieldException raised when required fields are None."""
+
+    def test_raises_missing_field_exception_when_start_time_is_none(self):
+        """Should raise MissingFieldException when start_time is None."""
+        with pytest.raises(MissingFieldException) as exc_info:
+            SchedulesSlotVO(
+                start_time=None,
+                end_time=time(9, 0),
+                slot_duration_minutes=60,
+                is_available=True,
+            )
+
+        assert exc_info.value.field == "start_time"
+
+    def test_raises_missing_field_exception_when_end_time_is_none(self):
+        """Should raise MissingFieldException when end_time is None."""
+        with pytest.raises(MissingFieldException) as exc_info:
+            SchedulesSlotVO(
+                start_time=time(8, 0),
+                end_time=None,
+                slot_duration_minutes=60,
+                is_available=True,
+            )
+
+        assert exc_info.value.field == "end_time"
+
+    def test_raises_missing_field_exception_when_slot_duration_minutes_is_none(self):
+        """Should raise MissingFieldException when slot_duration_minutes is None."""
+        with pytest.raises(MissingFieldException) as exc_info:
+            SchedulesSlotVO(
+                start_time=time(8, 0),
+                end_time=time(9, 0),
+                slot_duration_minutes=None,
+                is_available=True,
+            )
+
+        assert exc_info.value.field == "slot_duration_minutes"
+
+    def test_raises_missing_field_exception_when_is_available_is_none(self):
+        """Should raise MissingFieldException when is_available is None."""
+        with pytest.raises(MissingFieldException) as exc_info:
+            SchedulesSlotVO(
+                start_time=time(8, 0),
+                end_time=time(9, 0),
+                slot_duration_minutes=60,
+                is_available=None,
+            )
+
+        assert exc_info.value.field == "is_available"
+
+    def test_missing_field_exception_contains_field_name_in_message(self):
+        """MissingFieldException message must reference the missing field name."""
+        with pytest.raises(MissingFieldException) as exc_info:
+            SchedulesSlotVO(
+                start_time=None,
+                end_time=time(9, 0),
+                slot_duration_minutes=60,
+                is_available=True,
+            )
+
+        assert "start_time" in str(exc_info.value)
 
 
 class TestSchedulesSlotVOValidation:

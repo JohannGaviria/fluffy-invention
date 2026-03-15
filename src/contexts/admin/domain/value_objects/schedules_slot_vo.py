@@ -32,7 +32,7 @@ class SchedulesSlotVO(BaseValueObject):
         }
         for field, value in REQUIRED_FIELDS.items():
             if value is None:
-                MissingFieldException(field, "is required")
+                raise MissingFieldException(field, "is required")
 
         if self.end_time <= self.start_time:
             raise ValueError("end_time must be greater than start_time")

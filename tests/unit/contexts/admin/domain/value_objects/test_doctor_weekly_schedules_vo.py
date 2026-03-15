@@ -207,3 +207,109 @@ class TestDoctorWeeklySchedulesVOOverlap:
         vo = DoctorWeeklySchedulesVO(schedules={"monday": slots})
 
         vo.validate()  # must not raise
+
+
+# ─────────────────────────── to_dict ────────────────────────────────────────
+
+
+class TestDoctorWeeklySchedulesVOToDict:
+    """Tests for DoctorWeeklySchedulesVO.to_dict()."""
+
+    def test_to_dict_returns_a_dict(self):
+        """to_dict must return a dict instance."""
+        vo = DoctorWeeklySchedulesVO(schedules={"monday": [_morning_slot()]})
+
+        result = vo.to_dict()
+
+        assert isinstance(result, dict)
+
+    def test_to_dict_contains_all_days_present_in_schedules(self):
+        """to_dict must include every day key that was provided."""
+        vo = DoctorWeeklySchedulesVO(
+            schedules={
+                "monday": [_morning_slot()],
+                "friday": [_afternoon_slot()],
+            }
+        )
+
+        result = vo.to_dict()
+
+        assert "monday" in result
+        assert "friday" in result
+
+    def test_to_dict_day_value_is_a_list(self):
+        """Each day value in the dict must be a list."""
+        vo = DoctorWeeklySchedulesVO(schedules={"monday": [_morning_slot()]})
+
+        result = vo.to_dict()
+
+        assert isinstance(result["monday"], list)
+
+    def test_to_dict_slot_entries_are_dicts(self):
+        """Each slot inside a day list must be serialised as a dict."""
+        vo = DoctorWeeklySchedulesVO(schedules={"monday": [_morning_slot()]})
+
+        result = vo.to_dict()
+
+        assert isinstance(result["monday"][0], dict)
+
+    def test_to_dict_slot_contains_expected_keys(self):
+        """Each serialised slot must contain start_time, end_time, slot_duration_minutes, is_available."""
+        vo = DoctorWeeklySchedulesVO(schedules={"monday": [_morning_slot()]})
+
+        slot_dict = vo.to_dict()["monday"][0]
+
+        assert "start_time" in slot_dict
+        assert "end_time" in slot_dict
+        assert "slot_duration_minutes" in slot_dict
+        assert "is_available" in slot_dict
+
+    def test_to_dict_preserves_slot_values(self):
+        """Slot values must be serialised correctly (times as ISO strings)."""
+        slot = _slot(time(8, 0), time(12, 0), 60)
+        vo = DoctorWeeklySchedulesVO(schedules={"monday": [slot]})
+
+        slot_dict = vo.to_dict()["monday"][0]
+
+        assert slot_dict["start_time"] == "08:00"
+        assert slot_dict["end_time"] == "12:00"
+        assert slot_dict["slot_duration_minutes"] == 60
+        assert slot_dict["is_available"] is True
+
+    def test_to_dict_with_multiple_slots_per_day(self):
+        """to_dict must include all slots for a day with multiple entries."""
+        vo = DoctorWeeklySchedulesVO(
+            schedules={"monday": [_morning_slot(), _afternoon_slot()]}
+        )
+
+        result = vo.to_dict()
+
+        assert len(result["monday"]) == 2
+
+    def test_to_dict_with_empty_slots_list(self):
+        """to_dict must map a day with no slots to an empty list."""
+        vo = DoctorWeeklySchedulesVO(schedules={"monday": []})
+
+        result = vo.to_dict()
+
+        assert result["monday"] == []
+
+    def test_to_dict_with_all_seven_days(self):
+        """to_dict must include all seven days when all are present."""
+        all_days = {
+            day: [_morning_slot()]
+            for day in [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday",
+            ]
+        }
+        vo = DoctorWeeklySchedulesVO(schedules=all_days)
+
+        result = vo.to_dict()
+
+        assert len(result) == 7
