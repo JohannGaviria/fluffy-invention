@@ -90,6 +90,40 @@ class TestTimezoneVOPostInit:
             TimezoneVO(timezone="America")
 
 
+class TestTimezoneVOValue:
+    """Tests for TimezoneVO.value method."""
+
+    def test_value_returns_timezone_string(self):
+        """value() must return the same string as the timezone field."""
+        vo = TimezoneVO(timezone="UTC")
+
+        assert vo.value() == "UTC"
+
+    def test_value_equals_timezone_attribute(self):
+        """value() and timezone must always be equal."""
+        for tz in ["UTC", "America/Bogota", "America/New_York", "Europe/London"]:
+            vo = TimezoneVO(timezone=tz)
+            assert vo.value() == vo.timezone
+
+    def test_value_returns_correct_string_for_america_bogota(self):
+        """value() must return 'America/Bogota' when that timezone is set."""
+        vo = TimezoneVO(timezone="America/Bogota")
+
+        assert vo.value() == "America/Bogota"
+
+    def test_value_returns_correct_string_for_asia_tokyo(self):
+        """value() must return 'Asia/Tokyo' when that timezone is set."""
+        vo = TimezoneVO(timezone="Asia/Tokyo")
+
+        assert vo.value() == "Asia/Tokyo"
+
+    def test_value_is_a_string(self):
+        """value() must return a str instance."""
+        vo = TimezoneVO(timezone="UTC")
+
+        assert isinstance(vo.value(), str)
+
+
 class TestTimezoneVOValidate:
     """Tests for TimezoneVO.validate()."""
 

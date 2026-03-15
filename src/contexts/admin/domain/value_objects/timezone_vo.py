@@ -32,3 +32,11 @@ class TimezoneVO(BaseValueObject):
         """
         if not self.timezone or not self.timezone.strip():
             raise ValueError("Timezone cannot be empty")
+
+    def value(self) -> str:
+        """Return the value of the TimezoneVO.
+
+        Returns:
+            str: The timezone value.
+        """
+        return self.timezone
