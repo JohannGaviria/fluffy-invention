@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 
+from src.contexts.admin.domain.enums.days_of_week_enum import DaysOfWeekEnum
 from src.contexts.admin.domain.value_objects.schedules_slot_vo import SchedulesSlotVO
 from src.shared.domain.value_objects.value_object import BaseValueObject
 
@@ -10,7 +11,7 @@ from src.shared.domain.value_objects.value_object import BaseValueObject
 class DoctorWeeklySchedulesVO(BaseValueObject):
     """Value Object representing a doctor's weekly schedules."""
 
-    schedules: dict[str, list[SchedulesSlotVO]]
+    schedules: dict[DaysOfWeekEnum, list[SchedulesSlotVO]]
 
     def validate(self) -> None:
         """Validate the DoctorWeeklySchedulesVO fields.
@@ -18,23 +19,15 @@ class DoctorWeeklySchedulesVO(BaseValueObject):
         Raises:
             ValueError: If schedules is empty or contains invalid days or slots.
         """
-        business_days = {
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday",
-            "sunday",
-        }
-
         if self.schedules is None:
             raise ValueError("Schedules cannot be empty")
 
+        valid_days = {d.value for d in DaysOfWeekEnum}
+
         # Validate that the schedules dictionary contains valid days and slots.
         for day, slots in self.schedules.items():
-            if day not in business_days:
-                raise ValueError(f"Invalid day: {day}")
+            if day not in valid_days:
+                raise ValueError(f"Invalid day: '{day}'")
 
             if not isinstance(slots, list):
                 raise ValueError(f"Slots for {day} must be a list")
@@ -45,12 +38,12 @@ class DoctorWeeklySchedulesVO(BaseValueObject):
             self._validate_overlapping_slots(day, slots)
 
     def _validate_overlapping_slots(
-        self, day: str, slots: list[SchedulesSlotVO]
+        self, day: DaysOfWeekEnum, slots: list[SchedulesSlotVO]
     ) -> None:
         """Validate that there are no overlapping slots for a given day.
 
         Args:
-            day (str): The day of the week for which to validate the slots.
+            day (DaysOfWeekEnum): The day of the week for which to validate the slots.
             slots (list[SchedulesSlotVO]): The list of schedule slots to validate.
 
         Raises:

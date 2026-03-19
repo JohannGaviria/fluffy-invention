@@ -8,6 +8,7 @@ import pytest
 from src.contexts.admin.domain.entities.doctor_schedules_entity import (
     DoctorSchedulesEntity,
 )
+from src.contexts.admin.domain.enums.days_of_week_enum import DaysOfWeekEnum
 from src.contexts.admin.domain.value_objects.doctor_weekly_schedules_vo import (
     DoctorWeeklySchedulesVO,
 )
@@ -31,7 +32,7 @@ def _slot(start: time, end: time, duration: int = 60) -> SchedulesSlotVO:
 def _valid_schedules() -> DoctorWeeklySchedulesVO:
     """Return a minimal valid DoctorWeeklySchedulesVO."""
     return DoctorWeeklySchedulesVO(
-        schedules={"monday": [_slot(time(8, 0), time(9, 0))]}
+        schedules={DaysOfWeekEnum.MONDAY: [_slot(time(8, 0), time(9, 0))]}
     )
 
 
@@ -210,7 +211,11 @@ class TestDoctorSchedulesEntityCreateValidation:
             _slot(time(9, 0), time(11, 0)),
         ]
         bad_schedules = DoctorWeeklySchedulesVO.__new__(DoctorWeeklySchedulesVO)
-        object.__setattr__(bad_schedules, "schedules", {"monday": overlapping_slots})
+        object.__setattr__(
+            bad_schedules,
+            "schedules",
+            {DaysOfWeekEnum.MONDAY: overlapping_slots},
+        )
 
         with pytest.raises(ValueError):
             DoctorSchedulesEntity.create(
@@ -248,12 +253,12 @@ class TestDoctorSchedulesEntityCreateValidation:
         """Should create entity correctly with several days and a non-UTC timezone."""
         schedules = DoctorWeeklySchedulesVO(
             schedules={
-                "monday": [
+                DaysOfWeekEnum.MONDAY: [
                     _slot(time(8, 0), time(12, 0)),
                     _slot(time(14, 0), time(18, 0)),
                 ],
-                "wednesday": [_slot(time(9, 0), time(13, 0))],
-                "friday": [_slot(time(8, 0), time(17, 0), 30)],
+                DaysOfWeekEnum.WEDNESDAY: [_slot(time(9, 0), time(13, 0))],
+                DaysOfWeekEnum.FRIDAY: [_slot(time(8, 0), time(17, 0), 30)],
             }
         )
         timezone = _valid_timezone("America/New_York")
