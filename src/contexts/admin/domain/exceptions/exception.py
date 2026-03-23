@@ -19,7 +19,7 @@ class InactiveDoctorException(BaseDomainException):
         super().__init__("The doctor is inactive in the system.")
 
 
-class DoctorScheduleAlreadyExistsException(BaseException):
+class DoctorScheduleAlreadyExistsException(BaseDomainException):
     """Exception raised for when the doctor already has an assigned schedule."""
 
     def __init__(self) -> None:
