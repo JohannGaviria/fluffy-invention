@@ -20,6 +20,7 @@ from src.contexts.auth.domain.ports.repositories.doctor_repository_port import (
     DoctorRepositoryPort,
 )
 from src.shared.domain.ports.services.cache_service_port import CacheServicePort
+from src.shared.domain.value_objects.dummy_cache_vo import DummyCacheVO
 
 
 class AssignDoctorSchedulesUseCase:
@@ -29,7 +30,7 @@ class AssignDoctorSchedulesUseCase:
         self,
         doctor_repository_port: DoctorRepositoryPort,
         doctor_schedules_repository_port: DoctorSchedulesRepositoryPort,
-        cache_service_port: CacheServicePort,
+        cache_service_port: CacheServicePort[DummyCacheVO],
     ):
         """Initialize the AssignDoctorSchedules use case with the required ports.
 
@@ -37,7 +38,7 @@ class AssignDoctorSchedulesUseCase:
             doctor_repository_port (DoctorRepositoryPort): Port for accessing doctor data.
             doctor_schedules_repository_port (DoctorSchedulesRepositoryPort):
                 Port for accessing doctor schedules data.
-            cache_service_port (CacheServicePort): Port for accessing cache services.
+            cache_service_port (CacheServicePort[DummyCacheVO]): Port for accessing cache services.
         """
         self.doctor_repository_port = doctor_repository_port
         self.doctor_schedules_repository_port = doctor_schedules_repository_port

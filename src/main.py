@@ -6,6 +6,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import settings
+from src.contexts.admin.infrastructure.persistence.documents.doctor_schedules_document import (
+    DoctorSchedulesDocument,
+)
+from src.contexts.admin.presentation.api.exceptions.exceptions_handlers import (
+    register_admin_exceptions_handlers,
+)
+from src.contexts.admin.presentation.api.routes.router import router as admin_router
 from src.contexts.auth.presentation.api.exceptions.exceptions_handlers import (
     register_auth_exceptions_handlers,
 )
@@ -23,7 +30,7 @@ async def lifespan(app: FastAPI):
     Args:
         app (FastAPI): The FastAPI application instance.
     """
-    await MongoDatabase.init_beanie(document_models=[])
+    await MongoDatabase.init_beanie(document_models=[DoctorSchedulesDocument])
     yield
     MongoDatabase.close_client()
 
@@ -36,9 +43,13 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Include API routers
 app.include_router(router)
+app.include_router(admin_router)
 
+# Register exception handlers
 register_auth_exceptions_handlers(app)
+register_admin_exceptions_handlers(app)
 register_exceptions_handlers(app)
 
 

@@ -52,6 +52,28 @@ def get_current_user(
         ) from e
 
 
+def get_current_user_admin(
+    current_user: TokenPayloadVO = Depends(get_current_user),
+) -> TokenPayloadVO:
+    """Dependency injector to get the current user if they are an admin.
+
+    Args:
+        current_user (TokenPayloadVO): The current user token payload.
+
+    Returns:
+        TokenPayloadVO: The token payload value object if the user is an admin.
+
+    Raises:
+        HTTPException: If the user is not an admin.
+    """
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User does not have the required permissions to access this resource",
+        )
+    return current_user
+
+
 def request_details_dependency(request: Request) -> dict:
     """Dependency injector to get the request details.
 
