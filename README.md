@@ -113,11 +113,19 @@ Endpoints related to user authentication and account management.
 | Method | Endpoint                         | Requires Auth  | Description                                   |
 | ------ | -------------------------------- | -------------- | --------------------------------------------- |
 | `POST` | `/api/auth/register`             |      Yes       | Register a new user                           |
-| `POST` | `/api/auth/activate`             |       No       | Activate a user account using activation code |
-| `POST` | `/api/auth/login`                |       No       | Authenticate user and return access token     |
-| `PUT`  | `/api/auth/password`             |       Yes      | Update user password                          |
-| `POST` | `/api/auth/password-recovery`    |       No       | Request password recovery code                |
-| `PUT`  | `/api/auth/reset-password`       |       No       | Reset user password using recovery code       |
+| `POST` | `/api/auth/activate`             |      No        | Activate a user account using activation code |
+| `POST` | `/api/auth/login`                |      No        | Authenticate user and return access token     |
+| `PUT`  | `/api/auth/password`             |      Yes       | Update user password                          |
+| `POST` | `/api/auth/password-recovery`    |      No        | Request password recovery code                |
+| `PUT`  | `/api/auth/reset-password`       |      No        | Reset user password using recovery code       |
+
+## Administration Module
+
+Endpoints related to administration and management of the system.
+
+| Method | Endpoint                                      | Requires Auth  | Description                                         |
+| ------ | --------------------------------------------- | -------------- | --------------------------------------------------- |
+| `GET`  | `/api/admin/doctors/{doctor_id}/availability` |      Yes       | Get appointment availability for a specific doctor. |
 
 ## License
 

@@ -246,7 +246,7 @@ class TestDoctorWeeklySchedulesVOToDict:
         assert isinstance(result["monday"], list)
 
     def test_to_dict_slot_entries_are_dicts(self):
-        """Each slot inside a day list must be serialised as a dict."""
+        """Each slot inside a day list must be serialized as a dict."""
         vo = DoctorWeeklySchedulesVO(schedules={"monday": [_morning_slot()]})
 
         result = vo.to_dict()
@@ -254,7 +254,7 @@ class TestDoctorWeeklySchedulesVOToDict:
         assert isinstance(result["monday"][0], dict)
 
     def test_to_dict_slot_contains_expected_keys(self):
-        """Each serialised slot must contain start_time, end_time, slot_duration_minutes, is_available."""
+        """Each serialized slot must contain start_time, end_time, slot_duration_minutes, is_available."""
         vo = DoctorWeeklySchedulesVO(schedules={"monday": [_morning_slot()]})
 
         slot_dict = vo.to_dict()["monday"][0]
@@ -265,7 +265,7 @@ class TestDoctorWeeklySchedulesVOToDict:
         assert "is_available" in slot_dict
 
     def test_to_dict_preserves_slot_values(self):
-        """Slot values must be serialised correctly (times as ISO strings)."""
+        """Slot values must be serialized correctly (times as ISO strings)."""
         slot = _slot(time(8, 0), time(12, 0), 60)
         vo = DoctorWeeklySchedulesVO(schedules={"monday": [slot]})
 
