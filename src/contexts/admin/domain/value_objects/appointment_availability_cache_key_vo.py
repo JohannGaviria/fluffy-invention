@@ -2,6 +2,9 @@
 
 from dataclasses import dataclass
 
+from src.shared.domain.constants.cache_keys_constant import (
+    APPOINTMENT_AVAILABILITY_KEY_PREFIX,
+)
 from src.shared.domain.value_objects.cache_key_vo import CacheKeyVO
 
 
@@ -20,5 +23,5 @@ class AppointmentAvailabilityCacheKeyVO(CacheKeyVO):
             AppointmentAvailabilityCacheKeyVO: An instance of the cache key value object
                 with the key formatted for appointment availability caching.
         """
-        key = f"cache:admin:appointment_availability:{doctor_id}"
+        key = f"{APPOINTMENT_AVAILABILITY_KEY_PREFIX}:{doctor_id}"
         return cls(key=key)
